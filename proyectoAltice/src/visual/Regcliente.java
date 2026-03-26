@@ -140,10 +140,10 @@ public class Regcliente extends JDialog {
 			txtRegistrarCliente = new JTextField();
 			txtRegistrarCliente.setBounds(-24, 0, 277, 31);
 			panel.add(txtRegistrarCliente);
-			txtRegistrarCliente.setForeground(Color.WHITE);
+			txtRegistrarCliente.setForeground(SystemColor.desktop);
 			txtRegistrarCliente.setFont(new Font("Times New Roman", Font.BOLD, 21));
 			txtRegistrarCliente.setText("              Registrar Cliente");
-			txtRegistrarCliente.setBackground(new Color(0, 128, 0));
+			txtRegistrarCliente.setBackground(SystemColor.activeCaptionBorder);
 			txtRegistrarCliente.setColumns(10);
 		}
 		{
@@ -163,7 +163,12 @@ public class Regcliente extends JDialog {
 							String telefono=txttel.getText();
 							String direccion=txtdireccion.getText();
 							String tipo=comboBox.getSelectedItem().toString();
-							aux=new Cliente(codigo,nombre,cedula,telefono,direccion,tipo,"Activo");
+							String valorExtra = "";
+
+							if (tipo.equals("Valor")) {
+								valorExtra = cedula;
+							}
+							aux=new Cliente(codigo,nombre,cedula,telefono,direccion,tipo,"Activo",valorExtra);
 							AlticeSistema.getInstance().registrarPersona(aux);
 							clean();
 							JOptionPane.showMessageDialog(null, "Registro exitoso", "Informacion",JOptionPane.INFORMATION_MESSAGE);

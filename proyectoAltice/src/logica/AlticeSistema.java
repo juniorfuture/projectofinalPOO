@@ -26,6 +26,12 @@ public class AlticeSistema {
 		personas.add(aux);
 		if(aux instanceof Cliente)
 			numCliente++;
+		if(aux instanceof Trabajador)
+			numTecnico++;
+		if(aux instanceof Comercial)
+			numComercial++;
+		if(aux instanceof Administrativo)
+			numAdministrador++;
 	}
 	public static AlticeSistema getInstance()
 	{

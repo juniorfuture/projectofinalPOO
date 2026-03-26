@@ -10,7 +10,11 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import logica.Administrativo;
 import logica.AlticeSistema;
+import logica.Comercial;
+import logica.Persona;
+import logica.Trabajador;
 
 import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
@@ -25,6 +29,8 @@ import javax.swing.JRadioButton;
 import javax.swing.border.CompoundBorder;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.border.MatteBorder;
 
@@ -47,6 +53,8 @@ public class RegEmpleados extends JDialog {
 	private JPanel panelAdministrativo;
     private JRadioButton btnAdministrativo;
     private JRadioButton btnComercial;
+    private JPanel panelComercial;
+    private JComboBox cmbArea_1;
 
 	/**
 	 * Launch the application.
@@ -163,6 +171,9 @@ public class RegEmpleados extends JDialog {
 					btnTrabajo.setSelected(true);
 					panelTrabajador.setVisible(true);
 					panelAdministrativo.setVisible(false);
+					cmbArea.setVisible(true);
+					cmbAdmin.setVisible(false);
+					cmbArea_1.setVisible(false);
 					txtcodigo.setText("TRA-"+AlticeSistema.numTecnico);
 				}
 			});
@@ -179,10 +190,12 @@ public class RegEmpleados extends JDialog {
 					panelTrabajador.setVisible(false);
 					panelAdministrativo.setVisible(true);
 					cmbAdmin.setVisible(true);
+					cmbArea.setVisible(false);
+					cmbArea_1.setVisible(false);
 					txtcodigo.setText("ADM-"+AlticeSistema.numAdministrador);
 				}
 			});
-			btnAdministrativo.setBounds(244, 6, 102, 20);
+			btnAdministrativo.setBounds(244, 6, 116, 20);
 			panel.add(btnAdministrativo);
 			
 			btnComercial = new JRadioButton("Comercial");
@@ -194,6 +207,10 @@ public class RegEmpleados extends JDialog {
 					panelTrabajador.setVisible(false);
 					panelAdministrativo.setVisible(false);
 					cmbAdmin.setVisible(false);
+					panelComercial.setVisible(true);
+					cmbArea.setVisible(false);
+					cmbAdmin.setVisible(false);
+					cmbArea_1.setVisible(true);
 					txtcodigo.setText("COM-"+AlticeSistema.numComercial);
 				}
 			});
@@ -238,7 +255,9 @@ public class RegEmpleados extends JDialog {
 		}
 		{
 			txtfecha = new JTextField();
+			txtfecha.setEditable(false);
 			txtfecha.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			txtfecha.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 			txtfecha.setColumns(10);
 			txtfecha.setBounds(383, 207, 205, 23);
 			contentPanel.add(txtfecha);
@@ -264,6 +283,23 @@ public class RegEmpleados extends JDialog {
 			}
 			
 		}
+		
+		panelComercial = new JPanel();
+		panelComercial.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelComercial.setBounds(10, 296, 599, 66);
+		contentPanel.add(panelComercial);
+		panelComercial.setLayout(null);
+		
+		JLabel lblNewLabel_1_1_1_1_1_1 = new JLabel("Producto que vende");
+		lblNewLabel_1_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblNewLabel_1_1_1_1_1_1.setBounds(29, 27, 146, 19);
+		panelComercial.add(lblNewLabel_1_1_1_1_1_1);
+		
+		cmbArea_1 = new JComboBox();
+		cmbArea_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		cmbArea_1.setModel(new DefaultComboBoxModel(new String[] { "<Seleccione>", "Lineas telefonicas","Servicio de internet"}));
+		cmbArea_1.setBounds(154, 22, 158, 24);
+		panelComercial.add(cmbArea_1);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
@@ -276,10 +312,38 @@ public class RegEmpleados extends JDialog {
 						if(validarCampos())
 						{
 							
-							if(btnAdministrativo.isSelected())
-							{
-								
+							Persona aux = null;
+
+							String codigo = txtcodigo.getText();
+							String nombre = textField_1.getText();
+							String cedula = textField_2.getText();
+							String telefono = textField_3.getText();
+							String direccion = textField_4.getText();
+							double salario = Double.parseDouble(textField_5.getText());
+							String fecha = txtfecha.getText();
+							if (btnTrabajo.isSelected()) {
+								String area = cmbArea.getSelectedItem().toString();
+								aux = new Trabajador(codigo, nombre, cedula, telefono, direccion,
+										salario, fecha, area);
 							}
+							else if (btnAdministrativo.isSelected()) {
+
+								String departamento = cmbAdmin.getSelectedItem().toString();
+
+								aux = new Administrativo(codigo, nombre, cedula, telefono, direccion,
+										salario, fecha, departamento);
+							}
+							else if (btnComercial.isSelected()) {
+
+								String producto = cmbArea_1.getSelectedItem().toString();
+
+								aux = new Comercial(codigo, nombre, cedula, telefono, direccion,
+										salario, fecha, 0, producto);
+							}
+							AlticeSistema.getInstance().registrarPersona(aux);
+							clean();
+
+							JOptionPane.showMessageDialog(null, "Registro exitoso","Información", JOptionPane.INFORMATION_MESSAGE);
 						}
 					}
 				});
@@ -339,5 +403,24 @@ public class RegEmpleados extends JDialog {
 	    }
 
 	    return aux;
+	}
+	private void clean() {
+
+		textField_1.setText("");
+		textField_2.setText("");
+		textField_3.setText("");
+		textField_4.setText("");
+		textField_5.setText("");
+		txtfecha.setText("");
+		cmbArea.setSelectedIndex(0);
+		cmbAdmin.setSelectedIndex(0);
+		cmbArea_1.setSelectedIndex(0);
+		btnTrabajo.setSelected(true);
+		btnAdministrativo.setSelected(false);
+		btnComercial.setSelected(false);
+		panelTrabajador.setVisible(true);
+		panelAdministrativo.setVisible(false);
+		panelComercial.setVisible(false);
+		txtcodigo.setText("TRA-" + AlticeSistema.numTecnico);
 	}
 }
