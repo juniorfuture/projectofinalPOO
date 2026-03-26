@@ -7,6 +7,9 @@ public class AlticeSistema {
 
 	public static AlticeSistema sistema = null;
 	public static int numCliente=1;
+	public static int numTecnico=1;
+	public static int numAdministrador=1;
+	public static int numComercial=1;
 	private ArrayList<Persona> personas;
 	private List<Plan> planes;
 	private List<Servicio> servicios;
