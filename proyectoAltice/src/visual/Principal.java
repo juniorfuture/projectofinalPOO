@@ -108,12 +108,12 @@ public class Principal extends JFrame {
 			actualizarTablas();
 		});
 		mnNewMenu.add(mntmNewMenuItem_1);
-		
+
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Servicio");
 		mntmNewMenuItem_2.setForeground(Color.BLACK);
 		mntmNewMenuItem_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RegServicios servicio=new RegServicios();
+				RegServicios servicio = new RegServicios();
 				servicio.setModal(true);
 				servicio.setVisible(true);
 			}
@@ -139,12 +139,12 @@ public class Principal extends JFrame {
 		ImageIcon iconoPequeno4 = new ImageIcon(img4);
 		mntmNewMenuItem_3.setIcon(iconoPequeno4);
 		mnNewMenu.add(mntmNewMenuItem_3);
-		
+
 		JMenu mnNewMenu_1 = new JMenu("Ventas");
 		mnNewMenu_1.setForeground(Color.WHITE);
 		mnNewMenu_1.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		menuBar.add(mnNewMenu_1);
-		
+
 		JMenuItem mntmNewMenuItem_4 = new JMenuItem("Contrato");
 		mntmNewMenuItem_4.setForeground(Color.BLACK);
 		mntmNewMenuItem_4.addActionListener(new ActionListener() {
@@ -183,16 +183,15 @@ public class Principal extends JFrame {
 		panelFiltroClientes.add(cmbFiltroClientes, BorderLayout.CENTER);
 
 		modeloClientes = new DefaultTableModel();
-		modeloClientes.setColumnIdentifiers(new String[] {
-				"Código", "Nombre", "Cédula", "Teléfono", "Dirección", "Tipo", "Estado", "RNC"
-		});
+		modeloClientes.setColumnIdentifiers(
+				new String[] { "Código", "Nombre", "Cédula", "Teléfono", "Dirección", "Tipo", "Estado", "RNC" });
 
 		tablaClientes = new JTable(modeloClientes);
 		panelClientes.add(new JScrollPane(tablaClientes), BorderLayout.CENTER);
 
-		// PANEL EMPLEADOS
 		JPanel panelEmpleados = new JPanel(new BorderLayout(10, 10));
-		panelEmpleados.setBorder(new TitledBorder(null, "Empleados", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelEmpleados
+				.setBorder(new TitledBorder(null, "Empleados", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane.setBottomComponent(panelEmpleados);
 
 		JPanel panelFiltroEmpleados = new JPanel(new BorderLayout(5, 5));
@@ -207,9 +206,8 @@ public class Principal extends JFrame {
 		panelFiltroEmpleados.add(cmbFiltroEmpleados, BorderLayout.CENTER);
 
 		modeloEmpleados = new DefaultTableModel();
-		modeloEmpleados.setColumnIdentifiers(new String[] {
-				"Código", "Nombre", "Cédula", "Teléfono", "Dirección", "Tipo", "Salario", "Fecha Ingreso", "Detalle"
-		});
+		modeloEmpleados.setColumnIdentifiers(new String[] { "Código", "Nombre", "Cédula", "Teléfono", "Dirección",
+				"Tipo", "Salario", "Fecha Ingreso", "Detalle" });
 
 		tablaEmpleados = new JTable(modeloEmpleados);
 		panelEmpleados.add(new JScrollPane(tablaEmpleados), BorderLayout.CENTER);
@@ -229,16 +227,8 @@ public class Principal extends JFrame {
 		List<Cliente> clientes = AlticeSistema.getInstance().filtrarClientesPorTipo(filtro);
 
 		for (Cliente c : clientes) {
-			modeloClientes.addRow(new Object[] {
-					c.getId(),
-					c.getNombre(),
-					c.getCedula(),
-					c.getTelefono(),
-					c.getDireccion(),
-					c.getTipoCliente(),
-					c.getEstado(),
-					c.getRNC()
-			});
+			modeloClientes.addRow(new Object[] { c.getId(), c.getNombre(), c.getCedula(), c.getTelefono(),
+					c.getDireccion(), c.getTipoCliente(), c.getEstado(), c.getRNC() });
 		}
 	}
 
@@ -249,17 +239,9 @@ public class Principal extends JFrame {
 		List<Empleado> empleados = AlticeSistema.getInstance().filtrarEmpleadosPorTipo(filtro);
 
 		for (Empleado e : empleados) {
-			modeloEmpleados.addRow(new Object[] {
-					e.getId(),
-					e.getNombre(),
-					e.getCedula(),
-					e.getTelefono(),
-					e.getDireccion(),
-					AlticeSistema.getInstance().obtenerTipoEmpleado(e),
-					e.getSalario(),
-					e.getFechaIngreso(),
-					obtenerDetalleEmpleado(e)
-			});
+			modeloEmpleados.addRow(new Object[] { e.getId(), e.getNombre(), e.getCedula(), e.getTelefono(),
+					e.getDireccion(), AlticeSistema.getInstance().obtenerTipoEmpleado(e), e.getSalario(),
+					e.getFechaIngreso(), obtenerDetalleEmpleado(e) });
 		}
 	}
 

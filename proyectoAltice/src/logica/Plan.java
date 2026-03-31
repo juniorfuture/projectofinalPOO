@@ -1,19 +1,31 @@
 package logica;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Plan {
 
 	private String idPlan;
 	private String nombre;
 	private String tipo;
-	private double precio;
 	private String descripcion;
+	private double precio; 
+	private List<Servicio> serviciosIncluidos;
 
-	public Plan(String idPlan, String nombre, String tipo, double precio, String descripcion) {
+	public Plan(String idPlan, String nombre, String tipo, String descripcion, double precio) {
+		super();
 		this.idPlan = idPlan;
 		this.nombre = nombre;
 		this.tipo = tipo;
-		this.precio = precio;
 		this.descripcion = descripcion;
+		this.precio = precio;
+		this.serviciosIncluidos = new ArrayList<>();
+	}
+
+	public void agregarServicio(Servicio s) {
+		if (s != null) {
+			serviciosIncluidos.add(s);
+		}
 	}
 
 	public String getIdPlan() {
@@ -54,5 +66,13 @@ public class Plan {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+
+	public List<Servicio> getServiciosIncluidos() {
+		return serviciosIncluidos;
+	}
+
+	public void setServiciosIncluidos(List<Servicio> serviciosIncluidos) {
+		this.serviciosIncluidos = serviciosIncluidos;
 	}
 }

@@ -18,6 +18,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.border.MatteBorder;
@@ -29,9 +31,8 @@ public class RegServicios extends JDialog {
 
 	private JTextField txtIdServicio;
 	private JTextField txtNombre;
-	private JTextField txtCosto;
-	private JTextField txtTituloHeader;
 	private JComboBox<String> cmbTipo;
+	private JTextArea txtDescripcion; 
 
 	public static void main(String[] args) {
 		try {
@@ -44,8 +45,8 @@ public class RegServicios extends JDialog {
 	}
 
 	public RegServicios() {
-		setTitle("Registro de Servicios");
-		setBounds(100, 100, 450, 350);
+		setTitle("Registro de Servicios Técnicos");
+		setBounds(100, 100, 480, 400);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 
@@ -53,117 +54,101 @@ public class RegServicios extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		txtTituloHeader = new JTextField();
-		txtTituloHeader.setBackground(new Color(192, 192, 192));
-		txtTituloHeader.setHorizontalAlignment(SwingConstants.CENTER);
-		txtTituloHeader.setEditable(false);
-		txtTituloHeader.setText("Registro de Servicios");
-		txtTituloHeader.setFont(new Font("Tahoma", Font.PLAIN, 19));
-		txtTituloHeader.setBounds(0, 0, 434, 34);
-		contentPanel.add(txtTituloHeader);
+		JTextField txtTitulo = new JTextField();
+		txtTitulo.setBackground(new Color(192, 192, 192));
+		txtTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+		txtTitulo.setEditable(false);
+		txtTitulo.setText("Registro de Servicios");
+		txtTitulo.setFont(new Font("Tahoma", Font.BOLD, 16));
+		txtTitulo.setBounds(0, 0, 464, 35);
+		contentPanel.add(txtTitulo);
 
 		JLabel lblId = new JLabel("ID Servicio:");
-		lblId.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblId.setBounds(30, 60, 80, 23);
+		lblId.setBounds(30, 60, 80, 14);
 		contentPanel.add(lblId);
 
 		txtIdServicio = new JTextField();
-		txtIdServicio.setFont(new Font("Tahoma", Font.BOLD, 12));
 		txtIdServicio.setText("SRV-" + AlticeSistema.numServicio);
 		txtIdServicio.setEditable(false);
-		txtIdServicio.setBounds(120, 63, 120, 20);
+		txtIdServicio.setBounds(120, 57, 120, 20);
 		contentPanel.add(txtIdServicio);
 
 		JLabel lblNombre = new JLabel("Nombre:");
-		lblNombre.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblNombre.setBounds(30, 100, 80, 23);
+		lblNombre.setBounds(30, 100, 80, 14);
 		contentPanel.add(lblNombre);
 
 		txtNombre = new JTextField();
-		txtNombre.setBounds(120, 102, 250, 23);
+		txtNombre.setBounds(120, 97, 300, 23);
 		contentPanel.add(txtNombre);
 
 		JLabel lblTipo = new JLabel("Tipo:");
-		lblTipo.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblTipo.setBounds(30, 140, 80, 23);
+		lblTipo.setBounds(30, 140, 80, 14);
 		contentPanel.add(lblTipo);
 
 		cmbTipo = new JComboBox<String>();
-		cmbTipo.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "<Seleccione>", "Internet", "Telefonía", "Televisión", "Plan Combo" }));
-		cmbTipo.setBounds(120, 142, 150, 23);
+		cmbTipo.setModel(new DefaultComboBoxModel<String>(new String[] {"<Seleccione>", "Internet", "Cable", "Telefonía", "Mantenimiento"}));
+		cmbTipo.setBounds(120, 136, 150, 23);
 		contentPanel.add(cmbTipo);
 
-		JLabel lblCosto = new JLabel("Costo:");
-		lblCosto.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblCosto.setBounds(30, 180, 80, 23);
-		contentPanel.add(lblCosto);
+		JLabel lblDesc = new JLabel("Descripción:");
+		lblDesc.setBounds(30, 180, 80, 14);
+		contentPanel.add(lblDesc);
 
-		txtCosto = new JTextField();
-		txtCosto.setBounds(120, 182, 120, 23);
-		contentPanel.add(txtCosto);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(120, 180, 300, 100);
+		contentPanel.add(scrollPane);
+
+		txtDescripcion = new JTextArea();
+		txtDescripcion.setLineWrap(true); 
+		txtDescripcion.setWrapStyleWord(true); 
+		scrollPane.setViewportView(txtDescripcion);
 
 		JPanel buttonPane = new JPanel();
 		buttonPane.setBorder(new MatteBorder(1, 0, 0, 0, Color.BLACK));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-		JButton okButton = new JButton("Registrar");
-		okButton.addActionListener(new ActionListener() {
+		JButton btnRegistrar = new JButton("Registrar");
+		btnRegistrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (validarCampos()) {
+				if (validar()) {
 					String id = txtIdServicio.getText();
 					String nombre = txtNombre.getText();
 					String tipo = cmbTipo.getSelectedItem().toString();
-					double costo = Double.parseDouble(txtCosto.getText());
+					String desc = txtDescripcion.getText();
 
-					Servicio nuevoServicio = new Servicio(id, nombre, tipo, costo);
-					AlticeSistema.getInstance().registrarServicio(nuevoServicio);
+					Servicio nuevo = new Servicio(id, nombre, tipo, desc);
+					AlticeSistema.getInstance().registrarServicio(nuevo);
 
-					JOptionPane.showMessageDialog(null, "Servicio registrado correctamente", "Éxito",
-							JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Servicio registrado con éxito.");
 					clean();
+					dispose();
 				}
 			}
 		});
-		buttonPane.add(okButton);
+		buttonPane.add(btnRegistrar);
 
-		JButton cancelButton = new JButton("Cancelar");
-		cancelButton.addActionListener(new ActionListener() {
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
 		});
-		buttonPane.add(cancelButton);
+		buttonPane.add(btnCancelar);
 	}
 
-	private boolean validarCampos() {
-		if (txtNombre.getText().trim().isEmpty() || txtCosto.getText().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+	private boolean validar() {
+		if (txtNombre.getText().trim().isEmpty() || txtDescripcion.getText().trim().isEmpty() || cmbTipo.getSelectedIndex() == 0) {
+			JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos.");
 			return false;
 		}
-
-		if (cmbTipo.getSelectedIndex() == 0) {
-			JOptionPane.showMessageDialog(null, "Debe seleccionar un tipo de servicio.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
-
-		try {
-			Double.parseDouble(txtCosto.getText());
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(null, "El costo debe ser un valor numérico.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
-
 		return true;
 	}
 
 	private void clean() {
 		txtNombre.setText("");
-		txtCosto.setText("");
+		txtDescripcion.setText("");
 		cmbTipo.setSelectedIndex(0);
 		txtIdServicio.setText("SRV-" + AlticeSistema.numServicio);
 	}

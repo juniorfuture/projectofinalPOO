@@ -5,15 +5,15 @@ public class Servicio {
 	private String idServicio;
 	private String nombre;
 	private String tipo;
-	private double costo;
+	private String descripcion; 
 	private boolean activo;
 
-	public Servicio(String idServicio, String nombre, String tipo, double costo) {
+	public Servicio(String idServicio, String nombre, String tipo, String descripcion) {
 		this.idServicio = idServicio;
 		this.nombre = nombre;
 		this.tipo = tipo;
-		this.costo = costo;
-		this.activo = true; 
+		this.descripcion = descripcion;
+		this.activo = true;
 	}
 
 	public String getIdServicio() {
@@ -40,12 +40,12 @@ public class Servicio {
 		this.tipo = tipo;
 	}
 
-	public double getCosto() {
-		return costo;
+	public String getDescripcion() {
+		return descripcion;
 	}
 
-	public void setCosto(double costo) {
-		this.costo = costo;
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
 	public boolean isActivo() {
@@ -54,13 +54,5 @@ public class Servicio {
 
 	public void setActivo(boolean activo) {
 		this.activo = activo;
-	}
-
-	public void activarServicio() {
-		this.activo = true;
-	}
-
-	public void desactivarServicio() {
-		this.activo = false;
 	}
 }

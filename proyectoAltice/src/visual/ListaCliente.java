@@ -26,7 +26,7 @@ public class ListaCliente extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTable table;
 	private DefaultTableModel model;
-	private Cliente clienteSeleccionado = null;
+	private String nombreSeleccionado = "";
 
 	public ListaCliente() {
 		setTitle("Listado General de Clientes");
@@ -46,6 +46,7 @@ public class ListaCliente extends JDialog {
 		String[] columnas = { "ID", "Cédula", "Nombre", "Teléfono", "Dirección" };
 		model = new DefaultTableModel(null, columnas) {
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -68,8 +69,7 @@ public class ListaCliente extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				int fila = table.getSelectedRow();
 				if (fila >= 0) {
-					String id = table.getValueAt(fila, 0).toString();
-					clienteSeleccionado = (Cliente) AlticeSistema.getInstance().buscarPersona(id);
+					nombreSeleccionado = table.getValueAt(fila, 2).toString();
 					dispose();
 				}
 			}
@@ -79,7 +79,7 @@ public class ListaCliente extends JDialog {
 		JButton btnCancelar = new JButton("Cancelar");
 		btnCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				clienteSeleccionado = null;
+				nombreSeleccionado = "";
 				dispose();
 			}
 		});
@@ -91,19 +91,13 @@ public class ListaCliente extends JDialog {
 		for (Persona p : AlticeSistema.getInstance().getPersonas()) {
 			if (p instanceof Cliente) {
 				Cliente c = (Cliente) p;
-				Object[] fila = { 
-					c.getId(), 
-					c.getCedula(), 
-					c.getNombre(), 
-					c.getTelefono(), 
-					c.getDireccion() 
-				};
+				Object[] fila = { c.getId(), c.getCedula(), c.getNombre(), c.getTelefono(), c.getDireccion() };
 				model.addRow(fila);
 			}
 		}
 	}
 
-	public Cliente getClienteSeleccionado() {
-		return clienteSeleccionado;
+	public String getNombreSeleccionado() {
+		return nombreSeleccionado;
 	}
 }

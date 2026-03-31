@@ -149,9 +149,26 @@ public class AlticeSistema {
 	    
 	    return disponibles;
 	}
-
+	public String[] getNombresPlanesDisponibles() {
+	    String[] nombres = new String[planes.size() + 1];
+	    nombres[0] = "<Seleccione>";
+	    for (int i = 0; i < planes.size(); i++) {
+	        nombres[i + 1] = planes.get(i).getNombre();
+	    }
+	    
+	    return nombres;
+	}
 	public void registrarContrato(Contrato nuevoContrato) {
 		contratos.add(nuevoContrato);
 		numContrato++;
+	}
+
+	public Persona buscarClientePorNombre(String nombreSeleccionado) {
+		for (Persona c : personas) {
+			if (c.getNombre().equals(nombreSeleccionado)) {
+				return c;
+			}
+		}
+		return null;
 	}
 }
