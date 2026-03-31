@@ -4,10 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -73,11 +75,31 @@ public class RegEmpleados extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
+		JLabel lblImagen = new JLabel("");
+		lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
+		int anchoContenedor = 136;
+		int altoContenedor = 136;
+		lblImagen.setBounds(7, 66, 144, 150);
+		try {
+			java.net.URL imgUrl = RegEmpleados.class.getResource("/imagenes/empleadoregistrar.png");
+			if (imgUrl != null) {
+				ImageIcon iconOriginal = new ImageIcon(imgUrl);
+				Image imgEscalada = iconOriginal.getImage().getScaledInstance(anchoContenedor, altoContenedor,
+						Image.SCALE_SMOOTH);
+				lblImagen.setIcon(new ImageIcon(imgEscalada));
+			} else {
+				System.err.println("No se encontró el archivo de imagen en /imagenes/empleadoregistrar.png");
+				lblImagen.setText("Sin Imagen");
+				lblImagen.setBorder(new EtchedBorder());
+			}
+		} catch (Exception e) {
+			System.err.println("Error cargando/escalando imagen: " + e.getMessage());
+		}
+		contentPanel.add(lblImagen);
 		JLabel lblNewLabel = new JLabel("Codigo:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel.setBounds(161, 44, 59, 23);
 		contentPanel.add(lblNewLabel);
-
 		txtcodigo = new JTextField();
 		txtcodigo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtcodigo.setText("TRA-" + AlticeSistema.numTecnico);
@@ -206,8 +228,8 @@ public class RegEmpleados extends JDialog {
 
 		cmbArea = new JComboBox<String>();
 		cmbArea.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		cmbArea.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "<Seleccione>", "Cajero", "Servicio al cliente", "Tecnico", "Ingeniero", "Call Center" }));
+		cmbArea.setModel(new DefaultComboBoxModel<String>(new String[] { "<Seleccione>", "Cajero",
+				"Servicio al cliente", "Tecnico", "Ingeniero", "Call Center" }));
 		cmbArea.setBounds(124, 22, 159, 25);
 		panelTrabajador.add(cmbArea);
 
@@ -253,8 +275,8 @@ public class RegEmpleados extends JDialog {
 
 		cmbAdmin = new JComboBox<String>();
 		cmbAdmin.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		cmbAdmin.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "<Seleccione>", "Ventas", "Servicio al cliente", "Tecnico", "Ingeniero", "Call Center" }));
+		cmbAdmin.setModel(new DefaultComboBoxModel<String>(new String[] { "<Seleccione>", "Ventas",
+				"Servicio al cliente", "Tecnico", "Ingeniero", "Call Center" }));
 		cmbAdmin.setBounds(144, 22, 159, 25);
 		panelAdministrativo.add(cmbAdmin);
 
@@ -305,7 +327,8 @@ public class RegEmpleados extends JDialog {
 
 					} else if (btnAdministrativo.isSelected()) {
 						String departamento = cmbAdmin.getSelectedItem().toString();
-						aux = new Administrativo(codigo, nombre, cedula, telefono, direccion, salario, fecha, departamento);
+						aux = new Administrativo(codigo, nombre, cedula, telefono, direccion, salario, fecha,
+								departamento);
 
 					} else if (btnComercial.isSelected()) {
 						String producto = cmbArea_1.getSelectedItem().toString();
@@ -315,7 +338,8 @@ public class RegEmpleados extends JDialog {
 					AlticeSistema.getInstance().registrarPersona(aux);
 					clean();
 
-					JOptionPane.showMessageDialog(null, "Registro exitoso", "Información", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Registro exitoso", "Información",
+							JOptionPane.INFORMATION_MESSAGE);
 					dispose();
 				}
 			}
@@ -369,8 +393,7 @@ public class RegEmpleados extends JDialog {
 		}
 
 		if (btnTrabajo.isSelected() && cmbArea.getSelectedIndex() == 0) {
-			JOptionPane.showMessageDialog(null, "Seleccione un área técnica.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Seleccione un área técnica.", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
@@ -381,8 +404,7 @@ public class RegEmpleados extends JDialog {
 		}
 
 		if (btnComercial.isSelected() && cmbArea_1.getSelectedIndex() == 0) {
-			JOptionPane.showMessageDialog(null, "Seleccione un producto.", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Seleccione un producto.", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 

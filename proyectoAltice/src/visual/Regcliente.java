@@ -68,75 +68,75 @@ public class Regcliente extends JDialog {
 			panel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			contentPanel.add(panel, BorderLayout.CENTER);
 			panel.setLayout(null);
-			
+
 			JLabel lblNewLabel = new JLabel("Codigo:\r\n");
 			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			lblNewLabel.setBounds(24, 55, 59, 23);
 			panel.add(lblNewLabel);
-			
+
 			JLabel lblNewLabel_1 = new JLabel("Nombre:\t\t\t");
 			lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			lblNewLabel_1.setBounds(24, 91, 59, 12);
 			panel.add(lblNewLabel_1);
-			
+
 			JLabel lblNewLabel_1_1 = new JLabel("Cedula:");
 			lblNewLabel_1_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			lblNewLabel_1_1.setBounds(24, 143, 44, 12);
 			panel.add(lblNewLabel_1_1);
-			
+
 			JLabel lblNewLabel_1_1_1 = new JLabel("Telefono:");
 			lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			lblNewLabel_1_1_1.setBounds(24, 193, 59, 12);
 			panel.add(lblNewLabel_1_1_1);
-			
+
 			JLabel lblNewLabel_1_1_1_1 = new JLabel("Direccion:");
 			lblNewLabel_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			lblNewLabel_1_1_1_1.setBounds(24, 235, 59, 12);
 			panel.add(lblNewLabel_1_1_1_1);
-			
+
 			JLabel lblNewLabel_1_1_1_1_1 = new JLabel("Tipo de Cliente:\r\n");
 			lblNewLabel_1_1_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			lblNewLabel_1_1_1_1_1.setBounds(24, 282, 97, 12);
 			panel.add(lblNewLabel_1_1_1_1_1);
-			
+
 			txtcod = new JTextField();
 			txtcod.setFont(new Font("Tahoma", Font.PLAIN, 14));
-			txtcod.setText("CLI-"+AlticeSistema.numCliente);
+			txtcod.setText("CLI-" + AlticeSistema.numCliente);
 			txtcod.setBounds(72, 58, 96, 18);
 			txtcod.setEditable(false);
 			panel.add(txtcod);
 			txtcod.setColumns(10);
-			
+
 			txtnom = new JTextField();
 			txtnom.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			txtnom.setBounds(24, 113, 205, 18);
 			txtnom.setColumns(10);
 			panel.add(txtnom);
-			
+
 			txtcedula = new JTextField();
 			txtcedula.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			txtcedula.setBounds(24, 165, 205, 18);
 			txtcedula.setColumns(10);
 			panel.add(txtcedula);
-			
+
 			txttel = new JTextField();
 			txttel.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			txttel.setBounds(24, 215, 205, 18);
 			txttel.setColumns(10);
 			panel.add(txttel);
-			
+
 			txtdireccion = new JTextField();
 			txtdireccion.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			txtdireccion.setBounds(24, 254, 205, 18);
 			txtdireccion.setColumns(10);
 			panel.add(txtdireccion);
-			
+
 			comboBox = new JComboBox();
 			comboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			comboBox.setModel(new DefaultComboBoxModel(new String[] { "<Seleccione>", "Normal","Valor" }));
+			comboBox.setModel(new DefaultComboBoxModel(new String[] { "<Seleccione>", "Normal", "Empresarial" }));
 			comboBox.setBounds(24, 304, 130, 20);
 			panel.add(comboBox);
-			
+
 			txtRegistrarCliente = new JTextField();
 			txtRegistrarCliente.setBounds(-24, 0, 277, 31);
 			panel.add(txtRegistrarCliente);
@@ -154,26 +154,26 @@ public class Regcliente extends JDialog {
 				JButton okButton = new JButton("Registrar\r\n");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(validarCampos())
-						{
-							Persona aux=null;
-							String codigo=txtcod.getText();
-							String nombre=txtnom.getText();
-							String cedula=txtcedula.getText();
-							String telefono=txttel.getText();
-							String direccion=txtdireccion.getText();
-							String tipo=comboBox.getSelectedItem().toString();
+						if (validarCampos()) {
+							Persona aux = null;
+							String codigo = txtcod.getText();
+							String nombre = txtnom.getText();
+							String cedula = txtcedula.getText();
+							String telefono = txttel.getText();
+							String direccion = txtdireccion.getText();
+							String tipo = comboBox.getSelectedItem().toString();
 							String valorExtra = "";
 
 							if (tipo.equals("Valor")) {
 								valorExtra = cedula;
 							}
-							aux=new Cliente(codigo,nombre,cedula,telefono,direccion,tipo,"Activo",valorExtra);
+							aux = new Cliente(codigo, nombre, cedula, telefono, direccion, tipo, "Activo", valorExtra);
 							AlticeSistema.getInstance().registrarPersona(aux);
 							clean();
-							JOptionPane.showMessageDialog(null, "Registro exitoso", "Informacion",JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Registro exitoso", "Informacion",
+									JOptionPane.INFORMATION_MESSAGE);
 						}
-					
+
 					}
 				});
 				okButton.setActionCommand("OK");
@@ -192,40 +192,38 @@ public class Regcliente extends JDialog {
 			}
 		}
 	}
+
 	private boolean validarCampos() {
 		boolean aux = true;
-		if (txtnom.getText().isEmpty() || txtcedula.getText().isEmpty() ||txttel.getText().isEmpty() || txtdireccion.getText().isEmpty() ||
-			comboBox.getSelectedIndex() == 0) {
+		if (txtnom.getText().isEmpty() || txtcedula.getText().isEmpty() || txttel.getText().isEmpty()
+				|| txtdireccion.getText().isEmpty() || comboBox.getSelectedIndex() == 0) {
 
-			JOptionPane.showMessageDialog(null,
-					"Por favor, completa todos los campos antes de continuar.", "Error",
+			JOptionPane.showMessageDialog(null, "Por favor, completa todos los campos antes de continuar.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			aux = false;
 		}
 
 		else if (!txtnom.getText().matches("[a-zA-Z ]+")) {
-			JOptionPane.showMessageDialog(null,
-					"El nombre no debe contener números.","Error",
+			JOptionPane.showMessageDialog(null, "El nombre no debe contener números.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			aux = false;
 		}
 
 		else if (!txtcedula.getText().matches("\\d+")) {
-			JOptionPane.showMessageDialog(null,
-					"La cédula solo debe contener números.","Error",
+			JOptionPane.showMessageDialog(null, "La cédula solo debe contener números.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			aux = false;
 		}
 
 		else if (!txttel.getText().matches("\\d+")) {
-			JOptionPane.showMessageDialog(null,
-					"El teléfono solo debe contener números.", "Error",
+			JOptionPane.showMessageDialog(null, "El teléfono solo debe contener números.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			aux = false;
 		}
 
 		return aux;
 	}
+
 	private void clean() {
 		txtcod.setText("CLI-" + AlticeSistema.numCliente);
 		txtnom.setText("");

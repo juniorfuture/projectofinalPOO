@@ -9,6 +9,7 @@ public class Factura {
 	private Contrato contrato;
 
 	public Factura(String idFactura, String fecha, String estado, Contrato contrato) {
+		super();
 		this.idFactura = idFactura;
 		this.fecha = fecha;
 		this.estado = estado;
@@ -57,6 +58,9 @@ public class Factura {
 	}
 
 	public double calcularTotal() {
-		return contrato.calcularCostoMensual();
+		if (contrato != null) {
+			return contrato.calcularCostoMensual();
+		}
+		return 0.0;
 	}
 }

@@ -10,11 +10,15 @@ public class AlticeSistema {
 	public static int numTecnico = 1;
 	public static int numAdministrador = 1;
 	public static int numComercial = 1;
-
+	public static int numServicio = 1;
+	public static int numPlan= 1;
+	public static int numContrato= 1;
+	public static int numFactura=1;
 	private ArrayList<Persona> personas;
-	private List<Plan> planes;
-	private List<Servicio> servicios;
-	private List<Factura> facturas;
+	private ArrayList<Plan> planes;
+	private ArrayList<Servicio> servicios;
+	private ArrayList<Factura> facturas;
+	private ArrayList<Contrato> contratos;
 
 	public AlticeSistema() {
 		personas = new ArrayList<>();
@@ -38,7 +42,14 @@ public class AlticeSistema {
 		if (aux instanceof Administrativo)
 			numAdministrador++;
 	}
-
+	public void registrarServicio(Servicio aux) {
+		servicios.add(aux);
+		numServicio++;
+	}
+	public void registrarPlan(Plan aux) {
+		planes.add(aux);
+		numPlan++;
+	}
 	public static AlticeSistema getInstance() {
 		if (sistema == null) {
 			sistema = new AlticeSistema();
@@ -46,7 +57,8 @@ public class AlticeSistema {
 		return sistema;
 	}
 
-	public Persona buscarCliente(String id) {
+
+	public Persona buscarPersona(String id) {
 		for (Persona c : personas) {
 			if (c.getId().equals(id)) {
 				return c;
@@ -54,11 +66,13 @@ public class AlticeSistema {
 		}
 		return null;
 	}
-
 	public ArrayList<Persona> getPersonas() {
 		return personas;
 	}
-
+	public void registrarFactura(Factura aux) {
+		facturas.add(aux);
+		numFactura++;
+	}
 	public List<Cliente> getClientes() {
 		List<Cliente> clientes = new ArrayList<>();
 
@@ -114,5 +128,30 @@ public class AlticeSistema {
 			return "Comercial";
 		}
 		return "Empleado";
+	}
+
+	public Plan buscarPlanPorNombre(String nombre) {
+			for (Plan c : planes) {
+				if (c.getNombre().equals(nombre)) {
+					return c;
+				}
+			}
+			return null;
+	}
+
+	public ArrayList<Servicio> getServiciosDisponibles() {
+		ArrayList<Servicio> disponibles = new ArrayList<>();
+	    for (Servicio temp : servicios) {
+	        if (temp.isActivo()) {
+	            disponibles.add(temp);
+	        }
+	    }
+	    
+	    return disponibles;
+	}
+
+	public void registrarContrato(Contrato nuevoContrato) {
+		contratos.add(nuevoContrato);
+		numContrato++;
 	}
 }

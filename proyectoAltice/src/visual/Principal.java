@@ -29,6 +29,8 @@ import logica.Cliente;
 import logica.Comercial;
 import logica.Empleado;
 import logica.Trabajador;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Principal extends JFrame {
 
@@ -78,6 +80,7 @@ public class Principal extends JFrame {
 		menuBar.add(mnNewMenu);
 
 		JMenuItem mntmNewMenuItem = new JMenuItem("Cliente");
+		mntmNewMenuItem.setForeground(Color.BLACK);
 		mntmNewMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 		ImageIcon icon = new ImageIcon(getClass().getResource("/imagenes/iconcliente.png"));
 		java.awt.Image img = icon.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
@@ -92,6 +95,7 @@ public class Principal extends JFrame {
 		mnNewMenu.add(mntmNewMenuItem);
 
 		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Personal");
+		mntmNewMenuItem_1.setForeground(Color.BLACK);
 		mntmNewMenuItem_1.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 		ImageIcon icon2 = new ImageIcon(getClass().getResource("/imagenes/iconpersonal.png"));
 		java.awt.Image img2 = icon2.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
@@ -104,6 +108,54 @@ public class Principal extends JFrame {
 			actualizarTablas();
 		});
 		mnNewMenu.add(mntmNewMenuItem_1);
+		
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Servicio");
+		mntmNewMenuItem_2.setForeground(Color.BLACK);
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegServicios servicio=new RegServicios();
+				servicio.setModal(true);
+				servicio.setVisible(true);
+			}
+		});
+		mntmNewMenuItem_2.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		mnNewMenu.add(mntmNewMenuItem_2);
+		ImageIcon icon3 = new ImageIcon(getClass().getResource("/imagenes/service.jpg"));
+		java.awt.Image img3 = icon3.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
+		ImageIcon iconoPequeno3 = new ImageIcon(img3);
+		mntmNewMenuItem_2.setIcon(iconoPequeno3);
+		JMenuItem mntmNewMenuItem_3 = new JMenuItem("Plan");
+		mntmNewMenuItem_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegPlanes pn = new RegPlanes();
+				pn.setModal(true);
+				pn.setVisible(true);
+			}
+		});
+		mntmNewMenuItem_3.setForeground(Color.BLACK);
+		mntmNewMenuItem_3.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		ImageIcon icon4 = new ImageIcon(getClass().getResource("/imagenes/plan.png"));
+		java.awt.Image img4 = icon4.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
+		ImageIcon iconoPequeno4 = new ImageIcon(img4);
+		mntmNewMenuItem_3.setIcon(iconoPequeno4);
+		mnNewMenu.add(mntmNewMenuItem_3);
+		
+		JMenu mnNewMenu_1 = new JMenu("Ventas");
+		mnNewMenu_1.setForeground(Color.WHITE);
+		mnNewMenu_1.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		menuBar.add(mnNewMenu_1);
+		
+		JMenuItem mntmNewMenuItem_4 = new JMenuItem("Contrato");
+		mntmNewMenuItem_4.setForeground(Color.BLACK);
+		mntmNewMenuItem_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegContratos contrato = new RegContratos();
+				contrato.setModal(true);
+				contrato.setVisible(true);
+			}
+		});
+		mntmNewMenuItem_4.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		mnNewMenu_1.add(mntmNewMenuItem_4);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
