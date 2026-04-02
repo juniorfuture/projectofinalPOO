@@ -11,9 +11,10 @@ public class AlticeSistema {
 	public static int numAdministrador = 1;
 	public static int numComercial = 1;
 	public static int numServicio = 1;
-	public static int numPlan= 1;
-	public static int numContrato= 1;
-	public static int numFactura=1;
+	public static int numPlan = 1;
+	public static int numContrato = 1;
+	public static int numFactura = 1;
+
 	private ArrayList<Persona> personas;
 	private ArrayList<Plan> planes;
 	private ArrayList<Servicio> servicios;
@@ -25,6 +26,14 @@ public class AlticeSistema {
 		planes = new ArrayList<>();
 		servicios = new ArrayList<>();
 		facturas = new ArrayList<>();
+		contratos = new ArrayList<>();
+	}
+
+	public static AlticeSistema getInstance() {
+		if (sistema == null) {
+			sistema = new AlticeSistema();
+		}
+		return sistema;
 	}
 
 	public void registrarPersona(Persona aux) {
@@ -42,21 +51,26 @@ public class AlticeSistema {
 		if (aux instanceof Administrativo)
 			numAdministrador++;
 	}
+
 	public void registrarServicio(Servicio aux) {
 		servicios.add(aux);
 		numServicio++;
 	}
+
 	public void registrarPlan(Plan aux) {
 		planes.add(aux);
 		numPlan++;
 	}
-	public static AlticeSistema getInstance() {
-		if (sistema == null) {
-			sistema = new AlticeSistema();
-		}
-		return sistema;
+
+	public void registrarFactura(Factura aux) {
+		facturas.add(aux);
+		numFactura++;
 	}
 
+	public void registrarContrato(Contrato nuevoContrato) {
+		contratos.add(nuevoContrato);
+		numContrato++;
+	}
 
 	public Persona buscarPersona(String id) {
 		for (Persona c : personas) {
@@ -66,13 +80,19 @@ public class AlticeSistema {
 		}
 		return null;
 	}
+
 	public ArrayList<Persona> getPersonas() {
 		return personas;
 	}
-	public void registrarFactura(Factura aux) {
-		facturas.add(aux);
-		numFactura++;
+
+	public List<Factura> getFacturas() {
+		return facturas;
 	}
+
+	public List<Contrato> getContratos() {
+		return contratos;
+	}
+
 	public List<Cliente> getClientes() {
 		List<Cliente> clientes = new ArrayList<>();
 
@@ -131,36 +151,31 @@ public class AlticeSistema {
 	}
 
 	public Plan buscarPlanPorNombre(String nombre) {
-			for (Plan c : planes) {
-				if (c.getNombre().equals(nombre)) {
-					return c;
-				}
+		for (Plan c : planes) {
+			if (c.getNombre().equals(nombre)) {
+				return c;
 			}
-			return null;
+		}
+		return null;
 	}
 
 	public ArrayList<Servicio> getServiciosDisponibles() {
 		ArrayList<Servicio> disponibles = new ArrayList<>();
-	    for (Servicio temp : servicios) {
-	        if (temp.isActivo()) {
-	            disponibles.add(temp);
-	        }
-	    }
-	    
-	    return disponibles;
+		for (Servicio temp : servicios) {
+			if (temp.isActivo()) {
+				disponibles.add(temp);
+			}
+		}
+		return disponibles;
 	}
+
 	public String[] getNombresPlanesDisponibles() {
-	    String[] nombres = new String[planes.size() + 1];
-	    nombres[0] = "<Seleccione>";
-	    for (int i = 0; i < planes.size(); i++) {
-	        nombres[i + 1] = planes.get(i).getNombre();
-	    }
-	    
-	    return nombres;
-	}
-	public void registrarContrato(Contrato nuevoContrato) {
-		contratos.add(nuevoContrato);
-		numContrato++;
+		String[] nombres = new String[planes.size() + 1];
+		nombres[0] = "<Seleccione>";
+		for (int i = 0; i < planes.size(); i++) {
+			nombres[i + 1] = planes.get(i).getNombre();
+		}
+		return nombres;
 	}
 
 	public Persona buscarClientePorNombre(String nombreSeleccionado) {
@@ -170,5 +185,9 @@ public class AlticeSistema {
 			}
 		}
 		return null;
+	}
+
+	public Reporte generarReporteGeneral() {
+		return new Reporte("REP-1", "General", "N/A", "N/A", facturas, contratos, personas);
 	}
 }
