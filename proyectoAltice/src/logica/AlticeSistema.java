@@ -2,12 +2,14 @@ package logica;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AlticeSistema implements Serializable {
 
-	private static final long serialVersionUID = 1L; 
-	
+	private static final long serialVersionUID = 1L;
+
 	public static AlticeSistema sistema = null;
 	public static int numCliente = 1;
 	public static int numTecnico = 1;
@@ -23,7 +25,7 @@ public class AlticeSistema implements Serializable {
 	private ArrayList<Servicio> servicios;
 	private ArrayList<Factura> facturas;
 	private ArrayList<Contrato> contratos;
-	private ArrayList<User> usuarios; 
+	private ArrayList<User> usuarios;
 	private User usuarioLogueado = null;
 
 	public AlticeSistema() {
@@ -33,7 +35,7 @@ public class AlticeSistema implements Serializable {
 		servicios = new ArrayList<>();
 		facturas = new ArrayList<>();
 		contratos = new ArrayList<>();
-		usuarios = new ArrayList<>(); 
+		usuarios = new ArrayList<>();
 	}
 
 	public static AlticeSistema getInstance() {
@@ -56,13 +58,13 @@ public class AlticeSistema implements Serializable {
 			usuarios = new ArrayList<>();
 		}
 		for (User u : usuarios) {
-			if (u.getUsername() != null && u.getUsername().equals(username) && 
-			    u.getPassword() != null && u.getPassword().equals(password)) {
-				usuarioLogueado = u; 
-				return true; 
+			if (u.getUsername() != null && u.getUsername().equals(username) && u.getPassword() != null
+					&& u.getPassword().equals(password)) {
+				usuarioLogueado = u;
+				return true;
 			}
 		}
-		return false; 
+		return false;
 	}
 
 	public User getUsuarioLogueado() {
@@ -71,10 +73,14 @@ public class AlticeSistema implements Serializable {
 
 	public void registrarPersona(Persona aux) {
 		personas.add(aux);
-		if (aux instanceof Cliente) numCliente++;
-		if (aux instanceof Trabajador) numTecnico++;
-		if (aux instanceof Comercial) numComercial++;
-		if (aux instanceof Administrativo) numAdministrador++;
+		if (aux instanceof Cliente)
+			numCliente++;
+		if (aux instanceof Trabajador)
+			numTecnico++;
+		if (aux instanceof Comercial)
+			numComercial++;
+		if (aux instanceof Administrativo)
+			numAdministrador++;
 	}
 
 	public void registrarServicio(Servicio aux) {
@@ -106,9 +112,17 @@ public class AlticeSistema implements Serializable {
 		return null;
 	}
 
-	public ArrayList<Persona> getPersonas() { return personas; }
-	public List<Factura> getFacturas() { return facturas; }
-	public List<Contrato> getContratos() { return contratos; }
+	public ArrayList<Persona> getPersonas() {
+		return personas;
+	}
+
+	public List<Factura> getFacturas() {
+		return facturas;
+	}
+
+	public List<Contrato> getContratos() {
+		return contratos;
+	}
 
 	public List<Cliente> getClientes() {
 		List<Cliente> clientes = new ArrayList<>();
@@ -151,9 +165,12 @@ public class AlticeSistema implements Serializable {
 	}
 
 	public String obtenerTipoEmpleado(Empleado e) {
-		if (e instanceof Trabajador) return "Trabajador";
-		if (e instanceof Administrativo) return "Administrativo";
-		if (e instanceof Comercial) return "Comercial";
+		if (e instanceof Trabajador)
+			return "Trabajador";
+		if (e instanceof Administrativo)
+			return "Administrativo";
+		if (e instanceof Comercial)
+			return "Comercial";
 		return "Empleado";
 	}
 
@@ -192,6 +209,55 @@ public class AlticeSistema implements Serializable {
 			}
 		}
 		return null;
+	}
+
+	public int ejecutarCortesAutomaticos() {
+		int contratosSuspendidos = 0;
+		for (Contrato c : contratos) {
+			if (c.getEstado().equalsIgnoreCase("Activo")) {
+				int vencidas = 0;
+				for (Factura f : facturas) {
+					if (f.getContrato() != null && f.getContrato().getIdContrato().equals(c.getIdContrato())) {
+						if (f.getEstado().equalsIgnoreCase("Vencida")) {
+							vencidas++;
+						}
+					}
+				}
+				if (vencidas > 2) {
+					c.setEstado("Suspendido por Falta de Pago");
+					contratosSuspendidos++;
+				}
+			}
+		}
+		return contratosSuspendidos;
+	}
+
+	public int[] obtenerEstadisticasFacturas() {
+		int pagadas = 0;
+		int pendientes = 0;
+		int vencidas = 0;
+
+		for (Factura f : facturas) {
+			if (f.getEstado().equalsIgnoreCase("Pagada")) {
+				pagadas++;
+			} else if (f.getEstado().equalsIgnoreCase("Pendiente")) {
+				pendientes++;
+			} else if (f.getEstado().equalsIgnoreCase("Vencida")) {
+				vencidas++;
+			}
+		}
+		return new int[] { pagadas, pendientes, vencidas };
+	}
+
+	public Map<String, Integer> obtenerVentasPorPlan() {
+		Map<String, Integer> ventas = new HashMap<>();
+		for (Contrato c : contratos) {
+			if (c.getEstado().equalsIgnoreCase("Activo") && c.getPlan() != null) {
+				String nombrePlan = c.getPlan().getNombre();
+				ventas.put(nombrePlan, ventas.getOrDefault(nombrePlan, 0) + 1);
+			}
+		}
+		return ventas;
 	}
 
 	public Reporte generarReporteGeneral() {

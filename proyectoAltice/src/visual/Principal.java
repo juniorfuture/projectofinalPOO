@@ -114,11 +114,13 @@ public class Principal extends JFrame {
 		ImageIcon icon = new ImageIcon(getClass().getResource("/imagenes/iconcliente.png"));
 		java.awt.Image img = icon.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
 		itemCliente.setIcon(new ImageIcon(img));
-		itemCliente.addActionListener(e -> {
-			Regcliente cliente = new Regcliente();
-			cliente.setModal(true);
-			cliente.setVisible(true);
-			actualizarTablas();
+		itemCliente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Regcliente cliente = new Regcliente();
+				cliente.setModal(true);
+				cliente.setVisible(true);
+				actualizarTablas();
+			}
 		});
 		mnRegistrar.add(itemCliente);
 
@@ -128,11 +130,13 @@ public class Principal extends JFrame {
 		ImageIcon icon2 = new ImageIcon(getClass().getResource("/imagenes/iconpersonal.png"));
 		java.awt.Image img2 = icon2.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
 		itemPersonal.setIcon(new ImageIcon(img2));
-		itemPersonal.addActionListener(e -> {
-			RegEmpleados empleado = new RegEmpleados();
-			empleado.setModal(true);
-			empleado.setVisible(true);
-			actualizarTablas();
+		itemPersonal.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegEmpleados empleado = new RegEmpleados();
+				empleado.setModal(true);
+				empleado.setVisible(true);
+				actualizarTablas();
+			}
 		});
 		mnRegistrar.add(itemPersonal);
 
@@ -142,10 +146,12 @@ public class Principal extends JFrame {
 		ImageIcon icon3 = new ImageIcon(getClass().getResource("/imagenes/service.jpg"));
 		java.awt.Image img3 = icon3.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
 		itemServicio.setIcon(new ImageIcon(img3));
-		itemServicio.addActionListener(e -> {
-			RegServicios servicio = new RegServicios();
-			servicio.setModal(true);
-			servicio.setVisible(true);
+		itemServicio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegServicios servicio = new RegServicios();
+				servicio.setModal(true);
+				servicio.setVisible(true);
+			}
 		});
 		mnRegistrar.add(itemServicio);
 
@@ -155,14 +161,19 @@ public class Principal extends JFrame {
 		ImageIcon icon4 = new ImageIcon(getClass().getResource("/imagenes/plan.png"));
 		java.awt.Image img4 = icon4.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
 		itemPlan.setIcon(new ImageIcon(img4));
-		itemPlan.addActionListener(e -> {
-			RegPlanes pn = new RegPlanes();
-			pn.setModal(true);
-			pn.setVisible(true);
+		itemPlan.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegPlanes pn = new RegPlanes();
+				pn.setModal(true);
+				pn.setVisible(true);
+			}
 		});
 		mnRegistrar.add(itemPlan);
-		
+
 		JMenuItem mntmNewMenuItem = new JMenuItem("Usuario");
+		ImageIcon icon5 = new ImageIcon(getClass().getResource("/imagenes/usuario.png"));
+		java.awt.Image img5 = icon5.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
+		mntmNewMenuItem.setIcon(new ImageIcon(img5));
 		mntmNewMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				RegUsuarios usuario = new RegUsuarios();
@@ -181,24 +192,49 @@ public class Principal extends JFrame {
 		JMenuItem itemContrato = new JMenuItem("Contrato");
 		itemContrato.setForeground(Color.BLACK);
 		itemContrato.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-		itemContrato.addActionListener(e -> {
-			RegContratos contrato = new RegContratos();
-			contrato.setModal(true);
-			contrato.setVisible(true);
-			actualizarTablas();
+		ImageIcon icon6 = new ImageIcon(getClass().getResource("/imagenes/contrato.png"));
+		java.awt.Image img6 = icon6.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
+		itemContrato.setIcon(new ImageIcon(img6));
+		itemContrato.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegContratos contrato = new RegContratos();
+				contrato.setModal(true);
+				contrato.setVisible(true);
+				actualizarTablas();
+			}
 		});
 		mnVentas.add(itemContrato);
-		
+
 		JMenuItem itemPagos = new JMenuItem("Pagos");
+		ImageIcon icon7 = new ImageIcon(getClass().getResource("/imagenes/pagos.png"));
+		java.awt.Image img7 = icon7.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
+		itemPagos.setIcon(new ImageIcon(img7));
 		itemPagos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RegPagos pagos=new RegPagos();
+				RegPagos pagos = new RegPagos();
 				pagos.setModal(true);
 				pagos.setVisible(true);
+				actualizarTablas();
 			}
 		});
 		itemPagos.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 		mnVentas.add(itemPagos);
+
+		JMenuItem itemCortes = new JMenuItem("Ejecutar Cortes Automáticos");
+		ImageIcon icon8 = new ImageIcon(getClass().getResource("/imagenes/corte.png"));
+		java.awt.Image img8 = icon8.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
+		itemCortes.setIcon(new ImageIcon(img8));
+		itemCortes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int afectados = AlticeSistema.getInstance().ejecutarCortesAutomaticos();
+				JOptionPane.showMessageDialog(null,
+						"Proceso completado con éxito.\nContratos suspendidos: " + afectados, "Cortes por Morosidad",
+						JOptionPane.INFORMATION_MESSAGE);
+				actualizarTablas();
+			}
+		});
+		itemCortes.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		mnVentas.add(itemCortes);
 
 		JMenu mnReportes = new JMenu("Reportes");
 		mnReportes.setForeground(Color.WHITE);
@@ -208,8 +244,29 @@ public class Principal extends JFrame {
 		JMenuItem itemReporteGeneral = new JMenuItem("Reporte General");
 		itemReporteGeneral.setForeground(Color.BLACK);
 		itemReporteGeneral.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-		itemReporteGeneral.addActionListener(e -> mostrarReporteGeneral());
+		ImageIcon icon9 = new ImageIcon(getClass().getResource("/imagenes/reporte.png"));
+		java.awt.Image img9 = icon9.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
+		itemReporteGeneral.setIcon(new ImageIcon(img9));
+		itemReporteGeneral.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mostrarReporteGeneral();
+			}
+		});
 		mnReportes.add(itemReporteGeneral);
+		
+		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Graficos");
+		ImageIcon icon10 = new ImageIcon(getClass().getResource("/imagenes/grafico.png"));
+		java.awt.Image img10 = icon10.getImage().getScaledInstance(35, 35, java.awt.Image.SCALE_SMOOTH);
+		mntmNewMenuItem_1.setIcon(new ImageIcon(img10));
+		mntmNewMenuItem_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Graficas grafica=new Graficas();
+				grafica.setVisible(true);
+				grafica.setModal(true);
+			}
+		});
+		mntmNewMenuItem_1.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		mnReportes.add(mntmNewMenuItem_1);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -238,7 +295,11 @@ public class Principal extends JFrame {
 		panelFiltroClientes.add(lblFiltroClientes, BorderLayout.WEST);
 
 		cmbFiltroClientes = new JComboBox<>(new String[] { "Todos", "Normal", "Empresarial" });
-		cmbFiltroClientes.addActionListener(e -> cargarTablaClientes());
+		cmbFiltroClientes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cargarTablaClientes();
+			}
+		});
 		panelFiltroClientes.add(cmbFiltroClientes, BorderLayout.CENTER);
 
 		modeloClientes = new DefaultTableModel();
@@ -261,7 +322,11 @@ public class Principal extends JFrame {
 		panelFiltroEmpleados.add(lblFiltroEmpleados, BorderLayout.WEST);
 
 		cmbFiltroEmpleados = new JComboBox<>(new String[] { "Todos", "Trabajador", "Administrativo", "Comercial" });
-		cmbFiltroEmpleados.addActionListener(e -> cargarTablaEmpleados());
+		cmbFiltroEmpleados.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cargarTablaEmpleados();
+			}
+		});
 		panelFiltroEmpleados.add(cmbFiltroEmpleados, BorderLayout.CENTER);
 
 		modeloEmpleados = new DefaultTableModel();
@@ -282,7 +347,11 @@ public class Principal extends JFrame {
 		panelSuperiorFacturas.add(lblFiltroFacturas, BorderLayout.WEST);
 
 		cmbFiltroFacturas = new JComboBox<>(new String[] { "Todas", "Pendiente", "Pagada", "Vencida" });
-		cmbFiltroFacturas.addActionListener(e -> cargarTablaFacturas());
+		cmbFiltroFacturas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cargarTablaFacturas();
+			}
+		});
 		panelSuperiorFacturas.add(cmbFiltroFacturas, BorderLayout.CENTER);
 
 		modeloFacturas = new DefaultTableModel();
