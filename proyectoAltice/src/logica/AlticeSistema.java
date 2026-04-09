@@ -1,10 +1,13 @@
 package logica;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlticeSistema {
+public class AlticeSistema implements Serializable {
 
+	private static final long serialVersionUID = 1L; 
+	
 	public static AlticeSistema sistema = null;
 	public static int numCliente = 1;
 	public static int numTecnico = 1;
@@ -20,13 +23,17 @@ public class AlticeSistema {
 	private ArrayList<Servicio> servicios;
 	private ArrayList<Factura> facturas;
 	private ArrayList<Contrato> contratos;
+	private ArrayList<User> usuarios; 
+	private User usuarioLogueado = null;
 
 	public AlticeSistema() {
+		super();
 		personas = new ArrayList<>();
 		planes = new ArrayList<>();
 		servicios = new ArrayList<>();
 		facturas = new ArrayList<>();
 		contratos = new ArrayList<>();
+		usuarios = new ArrayList<>(); 
 	}
 
 	public static AlticeSistema getInstance() {
@@ -36,20 +43,38 @@ public class AlticeSistema {
 		return sistema;
 	}
 
+	public static void setSistema(AlticeSistema temp) {
+		AlticeSistema.sistema = temp;
+	}
+
+	public void regUser(User aux) {
+		usuarios.add(aux);
+	}
+
+	public boolean confirmLogin(String username, String password) {
+		if (usuarios == null) {
+			usuarios = new ArrayList<>();
+		}
+		for (User u : usuarios) {
+			if (u.getUsername() != null && u.getUsername().equals(username) && 
+			    u.getPassword() != null && u.getPassword().equals(password)) {
+				usuarioLogueado = u; 
+				return true; 
+			}
+		}
+		return false; 
+	}
+
+	public User getUsuarioLogueado() {
+		return usuarioLogueado;
+	}
+
 	public void registrarPersona(Persona aux) {
 		personas.add(aux);
-
-		if (aux instanceof Cliente)
-			numCliente++;
-
-		if (aux instanceof Trabajador)
-			numTecnico++;
-
-		if (aux instanceof Comercial)
-			numComercial++;
-
-		if (aux instanceof Administrativo)
-			numAdministrador++;
+		if (aux instanceof Cliente) numCliente++;
+		if (aux instanceof Trabajador) numTecnico++;
+		if (aux instanceof Comercial) numComercial++;
+		if (aux instanceof Administrativo) numAdministrador++;
 	}
 
 	public void registrarServicio(Servicio aux) {
@@ -81,21 +106,12 @@ public class AlticeSistema {
 		return null;
 	}
 
-	public ArrayList<Persona> getPersonas() {
-		return personas;
-	}
-
-	public List<Factura> getFacturas() {
-		return facturas;
-	}
-
-	public List<Contrato> getContratos() {
-		return contratos;
-	}
+	public ArrayList<Persona> getPersonas() { return personas; }
+	public List<Factura> getFacturas() { return facturas; }
+	public List<Contrato> getContratos() { return contratos; }
 
 	public List<Cliente> getClientes() {
 		List<Cliente> clientes = new ArrayList<>();
-
 		for (Persona p : personas) {
 			if (p instanceof Cliente) {
 				clientes.add((Cliente) p);
@@ -106,7 +122,6 @@ public class AlticeSistema {
 
 	public List<Empleado> getEmpleados() {
 		List<Empleado> empleados = new ArrayList<>();
-
 		for (Persona p : personas) {
 			if (p instanceof Empleado) {
 				empleados.add((Empleado) p);
@@ -117,7 +132,6 @@ public class AlticeSistema {
 
 	public List<Cliente> filtrarClientesPorTipo(String tipoCliente) {
 		List<Cliente> clientesFiltrados = new ArrayList<>();
-
 		for (Cliente c : getClientes()) {
 			if (tipoCliente.equalsIgnoreCase("Todos") || c.getTipoCliente().equalsIgnoreCase(tipoCliente)) {
 				clientesFiltrados.add(c);
@@ -128,7 +142,6 @@ public class AlticeSistema {
 
 	public List<Empleado> filtrarEmpleadosPorTipo(String tipoEmpleado) {
 		List<Empleado> empleadosFiltrados = new ArrayList<>();
-
 		for (Empleado e : getEmpleados()) {
 			if (tipoEmpleado.equalsIgnoreCase("Todos") || obtenerTipoEmpleado(e).equalsIgnoreCase(tipoEmpleado)) {
 				empleadosFiltrados.add(e);
@@ -138,15 +151,9 @@ public class AlticeSistema {
 	}
 
 	public String obtenerTipoEmpleado(Empleado e) {
-		if (e instanceof Trabajador) {
-			return "Trabajador";
-		}
-		if (e instanceof Administrativo) {
-			return "Administrativo";
-		}
-		if (e instanceof Comercial) {
-			return "Comercial";
-		}
+		if (e instanceof Trabajador) return "Trabajador";
+		if (e instanceof Administrativo) return "Administrativo";
+		if (e instanceof Comercial) return "Comercial";
 		return "Empleado";
 	}
 

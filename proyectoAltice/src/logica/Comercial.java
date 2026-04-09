@@ -1,7 +1,9 @@
 package logica;
 
-public class Comercial extends Empleado {
+import java.io.Serializable;
 
+public class Comercial extends Empleado implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private double ventas;
 	private String producto;
 

@@ -1,7 +1,9 @@
 package logica;
 
-public class Administrativo extends Empleado {
+import java.io.Serializable;
 
+public class Administrativo extends Empleado implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String departamento;
 
 	public Administrativo(String id, String nombre, String cedula, String telefono, String direccion, double salario, String fechaIngreso, String departamento) {

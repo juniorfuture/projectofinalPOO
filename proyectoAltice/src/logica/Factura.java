@@ -1,7 +1,9 @@
 package logica;
 
-public class Factura {
+import java.io.Serializable;
 
+public class Factura implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String idFactura;
 	private String fecha;
 	private double montoTotal;

@@ -35,6 +35,9 @@ import logica.Empleado;
 import logica.Factura;
 import logica.Reporte;
 import logica.Trabajador;
+import logica.User;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Principal extends JFrame {
 
@@ -44,11 +47,9 @@ public class Principal extends JFrame {
 	private JTable tablaClientes;
 	private JTable tablaEmpleados;
 	private JTable tablaFacturas;
-
 	private DefaultTableModel modeloClientes;
 	private DefaultTableModel modeloEmpleados;
 	private DefaultTableModel modeloFacturas;
-
 	private JComboBox<String> cmbFiltroClientes;
 	private JComboBox<String> cmbFiltroEmpleados;
 	private JComboBox<String> cmbFiltroFacturas;
@@ -68,12 +69,29 @@ public class Principal extends JFrame {
 
 	public Principal() {
 		setTitle("Sistema");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 
 		Dimension dim = getToolkit().getScreenSize();
 		setSize(dim.width, dim.height - 48);
 		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				try {
+					java.io.FileOutputStream fileOut = new java.io.FileOutputStream("empresa1.dat");
+					java.io.ObjectOutputStream out = new java.io.ObjectOutputStream(fileOut);
+					out.writeObject(AlticeSistema.getInstance());
+					out.close();
+					fileOut.close();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error al guardar los datos.", "Error",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				System.exit(0);
+			}
+		});
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setBackground(new Color(40, 40, 40));
@@ -85,6 +103,10 @@ public class Principal extends JFrame {
 		mnRegistrar.setForeground(SystemColor.window);
 		mnRegistrar.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		menuBar.add(mnRegistrar);
+		User usuarioActual = AlticeSistema.getInstance().getUsuarioLogueado();
+		if (usuarioActual != null && !usuarioActual.getTipo().equalsIgnoreCase("Admin")) {
+			mnRegistrar.setVisible(false);
+		}
 
 		JMenuItem itemCliente = new JMenuItem("Cliente");
 		itemCliente.setForeground(Color.BLACK);
@@ -139,6 +161,17 @@ public class Principal extends JFrame {
 			pn.setVisible(true);
 		});
 		mnRegistrar.add(itemPlan);
+		
+		JMenuItem mntmNewMenuItem = new JMenuItem("Usuario");
+		mntmNewMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegUsuarios usuario = new RegUsuarios();
+				usuario.setModal(true);
+				usuario.setVisible(true);
+			}
+		});
+		mntmNewMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		mnRegistrar.add(mntmNewMenuItem);
 
 		JMenu mnVentas = new JMenu("Ventas");
 		mnVentas.setForeground(Color.WHITE);
@@ -155,6 +188,17 @@ public class Principal extends JFrame {
 			actualizarTablas();
 		});
 		mnVentas.add(itemContrato);
+		
+		JMenuItem itemPagos = new JMenuItem("Pagos");
+		itemPagos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegPagos pagos=new RegPagos();
+				pagos.setModal(true);
+				pagos.setVisible(true);
+			}
+		});
+		itemPagos.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		mnVentas.add(itemPagos);
 
 		JMenu mnReportes = new JMenu("Reportes");
 		mnReportes.setForeground(Color.WHITE);
@@ -205,7 +249,8 @@ public class Principal extends JFrame {
 		panelClientes.add(new JScrollPane(tablaClientes), BorderLayout.CENTER);
 
 		JPanel panelEmpleados = new JPanel(new BorderLayout(10, 10));
-		panelEmpleados.setBorder(new TitledBorder(null, "Empleados", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelEmpleados
+				.setBorder(new TitledBorder(null, "Empleados", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane.setBottomComponent(panelEmpleados);
 
 		JPanel panelFiltroEmpleados = new JPanel(new BorderLayout(5, 5));
@@ -220,9 +265,8 @@ public class Principal extends JFrame {
 		panelFiltroEmpleados.add(cmbFiltroEmpleados, BorderLayout.CENTER);
 
 		modeloEmpleados = new DefaultTableModel();
-		modeloEmpleados.setColumnIdentifiers(new String[] {
-				"Código", "Nombre", "Cédula", "Teléfono", "Dirección", "Tipo", "Salario", "Fecha Ingreso", "Detalle"
-		});
+		modeloEmpleados.setColumnIdentifiers(new String[] { "Código", "Nombre", "Cédula", "Teléfono", "Dirección",
+				"Tipo", "Salario", "Fecha Ingreso", "Detalle" });
 
 		tablaEmpleados = new JTable(modeloEmpleados);
 		panelEmpleados.add(new JScrollPane(tablaEmpleados), BorderLayout.CENTER);
@@ -242,9 +286,8 @@ public class Principal extends JFrame {
 		panelSuperiorFacturas.add(cmbFiltroFacturas, BorderLayout.CENTER);
 
 		modeloFacturas = new DefaultTableModel();
-		modeloFacturas.setColumnIdentifiers(new String[] {
-				"Factura", "Fecha", "Estado", "Contrato", "Cliente", "Plan", "Monto"
-		});
+		modeloFacturas.setColumnIdentifiers(
+				new String[] { "Factura", "Fecha", "Estado", "Contrato", "Cliente", "Plan", "Monto" });
 
 		tablaFacturas = new JTable(modeloFacturas);
 		panelFacturas.add(new JScrollPane(tablaFacturas), BorderLayout.CENTER);
@@ -265,10 +308,8 @@ public class Principal extends JFrame {
 		List<Cliente> clientes = AlticeSistema.getInstance().filtrarClientesPorTipo(filtro);
 
 		for (Cliente c : clientes) {
-			modeloClientes.addRow(new Object[] {
-					c.getId(), c.getNombre(), c.getCedula(), c.getTelefono(),
-					c.getDireccion(), c.getTipoCliente(), c.getEstado(), c.getRNC()
-			});
+			modeloClientes.addRow(new Object[] { c.getId(), c.getNombre(), c.getCedula(), c.getTelefono(),
+					c.getDireccion(), c.getTipoCliente(), c.getEstado(), c.getRNC() });
 		}
 	}
 
@@ -279,11 +320,9 @@ public class Principal extends JFrame {
 		List<Empleado> empleados = AlticeSistema.getInstance().filtrarEmpleadosPorTipo(filtro);
 
 		for (Empleado e : empleados) {
-			modeloEmpleados.addRow(new Object[] {
-					e.getId(), e.getNombre(), e.getCedula(), e.getTelefono(),
+			modeloEmpleados.addRow(new Object[] { e.getId(), e.getNombre(), e.getCedula(), e.getTelefono(),
 					e.getDireccion(), AlticeSistema.getInstance().obtenerTipoEmpleado(e), e.getSalario(),
-					e.getFechaIngreso(), obtenerDetalleEmpleado(e)
-			});
+					e.getFechaIngreso(), obtenerDetalleEmpleado(e) });
 		}
 	}
 
@@ -311,15 +350,8 @@ public class Principal extends JFrame {
 					}
 				}
 
-				modeloFacturas.addRow(new Object[] {
-						f.getIdFactura(),
-						f.getFecha(),
-						f.getEstado(),
-						idContrato,
-						nombreCliente,
-						nombrePlan,
-						String.format("RD$ %.2f", f.getMontoTotal())
-				});
+				modeloFacturas.addRow(new Object[] { f.getIdFactura(), f.getFecha(), f.getEstado(), idContrato,
+						nombreCliente, nombrePlan, String.format("RD$ %.2f", f.getMontoTotal()) });
 			}
 		}
 	}
@@ -343,14 +375,14 @@ public class Principal extends JFrame {
 		JDialog dialog = new JDialog(this, "Reporte General", true);
 		dialog.setSize(600, 450);
 		dialog.setLocationRelativeTo(this);
-		dialog.setLayout(new BorderLayout());
+		dialog.getContentPane().setLayout(new BorderLayout());
 
 		JTextArea txtReporte = new JTextArea();
 		txtReporte.setEditable(false);
 		txtReporte.setFont(new Font("Monospaced", Font.PLAIN, 14));
 		txtReporte.setText(reporte.generarContenido());
 
-		dialog.add(new JScrollPane(txtReporte), BorderLayout.CENTER);
+		dialog.getContentPane().add(new JScrollPane(txtReporte), BorderLayout.CENTER);
 		dialog.setVisible(true);
 	}
 }

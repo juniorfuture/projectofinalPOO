@@ -1,9 +1,10 @@
 package logica;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Reporte {
-
+public class Reporte implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private String idReporte;
 	private String tipo;
 	private String fechaInicio;
@@ -66,7 +67,6 @@ public class Reporte {
 		sb.append("ID Reporte: ").append(idReporte).append("\n");
 		sb.append("Tipo: ").append(tipo).append("\n");
 		sb.append("Rango: ").append(fechaInicio).append(" - ").append(fechaFin).append("\n\n");
-
 		sb.append("--------------- RESUMEN GENERAL -------------------\n");
 		sb.append("Total de clientes registrados: ").append(totalClientes).append("\n");
 		sb.append("Total de empleados registrados: ").append(totalEmpleados).append("\n");

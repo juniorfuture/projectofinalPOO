@@ -1,7 +1,9 @@
 package logica;
 
-public abstract class Empleado extends Persona {
+import java.io.Serializable;
 
+public abstract class Empleado extends Persona implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private double salario;
 	private String fechaIngreso;
 

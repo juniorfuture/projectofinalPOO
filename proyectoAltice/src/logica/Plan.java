@@ -1,10 +1,11 @@
 package logica;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Plan {
-
+public class Plan implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String idPlan;
 	private String nombre;
 	private String tipo;

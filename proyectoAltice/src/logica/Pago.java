@@ -1,7 +1,9 @@
 package logica;
 
-public class Pago {
+import java.io.Serializable;
 
+public class Pago implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String idPago;
 	private String fecha;
 	private double monto;

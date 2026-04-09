@@ -1,9 +1,9 @@
 package logica;
 
-import java.util.List;
+import java.io.Serializable;
 
-public class Contrato {
-
+public class Contrato implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String idContrato;
 	private String fechaInicio;
 	private String estado;
