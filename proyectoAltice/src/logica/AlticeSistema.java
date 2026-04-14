@@ -364,9 +364,9 @@ public class AlticeSistema implements Serializable {
 			return null;
 		}
 
-		Pago pago = new Pago("PAG-" + numPago, fechaPago, factura.getMontoTotal(), metodo);
+		Pago pago = new Pago("PAG-" + numPago, fechaPago, factura.getMontoTotal(), metodo, factura);
+
 		if (pago.procesarPago()) {
-			factura.setEstado("Pagada");
 			numPago++;
 
 			if (factura.getContrato() != null && factura.getContrato().getCliente() != null) {
