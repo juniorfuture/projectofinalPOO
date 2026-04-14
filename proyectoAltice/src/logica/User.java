@@ -8,7 +8,8 @@ public class User implements Serializable {
 	private String nombre;
 	private String username;
 	private String password;
-	private String tipo; 
+	private String tipo;
+	private String idRelacionado;
 
 	public User(String nombre, String username, String password, String tipo) {
 		super();
@@ -16,6 +17,16 @@ public class User implements Serializable {
 		this.username = username;
 		this.password = password;
 		this.tipo = tipo;
+		this.idRelacionado = "";
+	}
+
+	public User(String nombre, String username, String password, String tipo, String idRelacionado) {
+		super();
+		this.nombre = nombre;
+		this.username = username;
+		this.password = password;
+		this.tipo = tipo;
+		this.idRelacionado = idRelacionado;
 	}
 
 	public String getNombre() {
@@ -48,5 +59,13 @@ public class User implements Serializable {
 
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
+	}
+
+	public String getIdRelacionado() {
+		return idRelacionado;
+	}
+
+	public void setIdRelacionado(String idRelacionado) {
+		this.idRelacionado = idRelacionado;
 	}
 }

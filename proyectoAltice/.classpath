@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-1.8"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/Lenovo/Downloads/GraficandoConJava/GraficandoConJava/lib/jcommon-1.0.23.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Lenovo/Downloads/GraficandoConJava/GraficandoConJava/lib/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="lib/jfreechart-1.5.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

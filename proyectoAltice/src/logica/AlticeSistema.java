@@ -19,6 +19,7 @@ public class AlticeSistema implements Serializable {
 	public static int numPlan = 1;
 	public static int numContrato = 1;
 	public static int numFactura = 1;
+	public static int numPago = 1;
 
 	private ArrayList<Persona> personas;
 	private ArrayList<Plan> planes;
@@ -49,8 +50,40 @@ public class AlticeSistema implements Serializable {
 		AlticeSistema.sistema = temp;
 	}
 
-	public void regUser(User aux) {
+	public boolean regUser(User aux) {
+		if (usuarios == null) {
+			usuarios = new ArrayList<>();
+		}
+		if (aux == null || aux.getUsername() == null || aux.getUsername().trim().isEmpty()) {
+			return false;
+		}
+		for (User u : usuarios) {
+			if (u.getUsername() != null && u.getUsername().equalsIgnoreCase(aux.getUsername())) {
+				return false;
+			}
+		}
 		usuarios.add(aux);
+		return true;
+	}
+
+	public boolean tieneUsuarios() {
+		return usuarios != null && !usuarios.isEmpty();
+	}
+
+	public List<User> getUsuarios() {
+		return usuarios;
+	}
+
+	public User buscarUsuarioPorUsername(String username) {
+		if (usuarios == null) {
+			return null;
+		}
+		for (User u : usuarios) {
+			if (u.getUsername() != null && u.getUsername().equalsIgnoreCase(username)) {
+				return u;
+			}
+		}
+		return null;
 	}
 
 	public boolean confirmLogin(String username, String password) {
@@ -69,6 +102,22 @@ public class AlticeSistema implements Serializable {
 
 	public User getUsuarioLogueado() {
 		return usuarioLogueado;
+	}
+
+	public void setUsuarioLogueado(User usuarioLogueado) {
+		this.usuarioLogueado = usuarioLogueado;
+	}
+
+	public boolean esUsuarioCliente() {
+		return usuarioLogueado != null && usuarioLogueado.getTipo() != null
+				&& usuarioLogueado.getTipo().equalsIgnoreCase("Cliente");
+	}
+
+	public Cliente getClienteDelUsuarioLogueado() {
+		if (!esUsuarioCliente()) {
+			return null;
+		}
+		return buscarClientePorId(usuarioLogueado.getIdRelacionado());
 	}
 
 	public void registrarPersona(Persona aux) {
@@ -106,6 +155,24 @@ public class AlticeSistema implements Serializable {
 	public Persona buscarPersona(String id) {
 		for (Persona c : personas) {
 			if (c.getId().equals(id)) {
+				return c;
+			}
+		}
+		return null;
+	}
+
+	public Cliente buscarClientePorId(String id) {
+		for (Persona p : personas) {
+			if (p instanceof Cliente && p.getId().equalsIgnoreCase(id)) {
+				return (Cliente) p;
+			}
+		}
+		return null;
+	}
+
+	public Persona buscarClientePorNombre(String nombreSeleccionado) {
+		for (Persona c : personas) {
+			if (c instanceof Cliente && c.getNombre().equals(nombreSeleccionado)) {
 				return c;
 			}
 		}
@@ -202,11 +269,110 @@ public class AlticeSistema implements Serializable {
 		return nombres;
 	}
 
-	public Persona buscarClientePorNombre(String nombreSeleccionado) {
-		for (Persona c : personas) {
-			if (c.getNombre().equals(nombreSeleccionado)) {
-				return c;
+	public String[] getNombresComercialesDisponibles() {
+		ArrayList<String> nombresComerciales = new ArrayList<>();
+		nombresComerciales.add("<Seleccione Comercial>");
+		for (Persona p : personas) {
+			if (p instanceof Comercial) {
+				nombresComerciales.add(p.getNombre());
 			}
+		}
+		return nombresComerciales.toArray(new String[0]);
+	}
+
+	public Comercial buscarComercialPorNombre(String nombreBuscado) {
+		for (Persona p : personas) {
+			if (p instanceof Comercial) {
+				if (p.getNombre().equalsIgnoreCase(nombreBuscado)) {
+					return (Comercial) p;
+				}
+			}
+		}
+		return null;
+	}
+
+	public boolean hayTecnicosDisponibles() {
+		for (Persona p : personas) {
+			if (p instanceof Trabajador) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void recalcularDeudaCliente(Cliente cliente) {
+		if (cliente == null) {
+			return;
+		}
+		int meses = 0;
+		double monto = 0;
+
+		for (Factura f : facturas) {
+			if (f.getContrato() != null && f.getContrato().getCliente() != null
+					&& f.getContrato().getCliente().getId().equalsIgnoreCase(cliente.getId())) {
+
+				if (f.getEstado().equalsIgnoreCase("Pendiente") || f.getEstado().equalsIgnoreCase("Vencida")) {
+					meses++;
+					monto += f.getMontoTotal();
+				}
+			}
+		}
+
+		cliente.setMesesDeuda(meses);
+		cliente.setMontoDeuda(monto);
+		cliente.setDeuda(monto > 0);
+	}
+
+	public void recalcularDeudasClientes() {
+		for (Cliente c : getClientes()) {
+			recalcularDeudaCliente(c);
+		}
+	}
+
+	public List<Factura> getFacturasDeCliente(Cliente cliente) {
+		List<Factura> resultado = new ArrayList<>();
+		if (cliente == null) {
+			return resultado;
+		}
+		for (Factura f : facturas) {
+			if (f.getContrato() != null && f.getContrato().getCliente() != null
+					&& f.getContrato().getCliente().getId().equalsIgnoreCase(cliente.getId())) {
+				resultado.add(f);
+			}
+		}
+		return resultado;
+	}
+
+	public List<Factura> getFacturasPendientesDeCliente(Cliente cliente) {
+		List<Factura> resultado = new ArrayList<>();
+		if (cliente == null) {
+			return resultado;
+		}
+		for (Factura f : getFacturasDeCliente(cliente)) {
+			if (f.getEstado().equalsIgnoreCase("Pendiente") || f.getEstado().equalsIgnoreCase("Vencida")) {
+				resultado.add(f);
+			}
+		}
+		return resultado;
+	}
+
+	public Pago procesarPagoFactura(Factura factura, String metodo, String fechaPago) {
+		if (factura == null) {
+			return null;
+		}
+		if (factura.getEstado().equalsIgnoreCase("Pagada")) {
+			return null;
+		}
+
+		Pago pago = new Pago("PAG-" + numPago, fechaPago, factura.getMontoTotal(), metodo);
+		if (pago.procesarPago()) {
+			factura.setEstado("Pagada");
+			numPago++;
+
+			if (factura.getContrato() != null && factura.getContrato().getCliente() != null) {
+				recalcularDeudaCliente(factura.getContrato().getCliente());
+			}
+			return pago;
 		}
 		return null;
 	}
@@ -262,28 +428,5 @@ public class AlticeSistema implements Serializable {
 
 	public Reporte generarReporteGeneral() {
 		return new Reporte("REP-1", "General", "N/A", "N/A", facturas, contratos, personas);
-	}
-	public String[] getNombresComercialesDisponibles() {
-		java.util.ArrayList<String> nombresComerciales = new java.util.ArrayList<>();
-		nombresComerciales.add("<Seleccione Comercial>");
-
-		for (Persona p : personas) { 
-			if (p instanceof Comercial) {
-				nombresComerciales.add(p.getNombre());
-			}
-		}
-
-		return nombresComerciales.toArray(new String[0]);
-	}
-
-	public Comercial buscarComercialPorNombre(String nombreBuscado) {
-		for (Persona p : personas) {
-			if (p instanceof Comercial) {
-				if (p.getNombre().equalsIgnoreCase(nombreBuscado)) {
-					return (Comercial) p;
-				}
-			}
-		}
-		return null;
 	}
 }

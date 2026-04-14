@@ -1,19 +1,30 @@
 package visual;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import logica.Administrativo;
 import logica.AlticeSistema;
@@ -21,39 +32,41 @@ import logica.Comercial;
 import logica.Persona;
 import logica.Trabajador;
 
-import javax.swing.border.EtchedBorder;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.JRadioButton;
-import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.border.MatteBorder;
 
 public class RegEmpleados extends JDialog {
 
 	private static final long serialVersionUID = 1L;
+
 	private final JPanel contentPanel = new JPanel();
 
 	private JTextField txtcodigo;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField txtRegistroDeEmpleados;
-	private JComboBox<String> cmbArea;
-	private JTextField textField_5;
-	private JComboBox<String> cmbAdmin;
-	private JTextField txtfecha;
+	private JTextField txtNombre;
+	private JTextField txtCedula;
+	private JTextField txtTelefono;
+	private JTextField txtDireccion;
+	private JTextField txtSalario;
+	private JTextField txtFecha;
+
+	private JComboBox<String> cmbAreaTrabajador;
+	private JComboBox<String> cmbAreaAdmin;
+	private JComboBox<String> cmbProductoComercial;
+
 	private JRadioButton btnTrabajo;
-	private JPanel panelTrabajador;
-	private JPanel panelAdministrativo;
 	private JRadioButton btnAdministrativo;
 	private JRadioButton btnComercial;
-	private JPanel panelComercial;
-	private JComboBox<String> cmbArea_1;
+
+	private CardLayout cardLayoutDetalle;
+	private JPanel panelDetalleTipo;
+	private ButtonGroup grupoTipo;
+
+	private final Color COLOR_FONDO = new Color(245, 247, 250);
+	private final Color COLOR_PANEL = Color.WHITE;
+	private final Color COLOR_PRIMARIO = new Color(31, 111, 235);
+	private final Color COLOR_TEXTO = new Color(33, 37, 41);
+	private final Color COLOR_SECUNDARIO = new Color(108, 117, 125);
+	private final Color COLOR_BORDE = new Color(220, 225, 230);
 
 	public static void main(String[] args) {
 		try {
@@ -67,271 +80,348 @@ public class RegEmpleados extends JDialog {
 
 	public RegEmpleados() {
 		setTitle("Registro de Empleados");
-		setBounds(100, 100, 633, 459);
+		setBounds(100, 100, 820, 740);
 		setLocationRelativeTo(null);
+		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
+		getContentPane().setBackground(COLOR_FONDO);
 
-		contentPanel.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		contentPanel.setBackground(COLOR_FONDO);
+		contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+		contentPanel.setLayout(new BorderLayout(18, 18));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(null);
 
-		JLabel lblImagen = new JLabel("");
-		lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
-		int anchoContenedor = 136;
-		int altoContenedor = 136;
-		lblImagen.setBounds(7, 66, 144, 150);
-		try {
-			java.net.URL imgUrl = RegEmpleados.class.getResource("/imagenes/empleadoregistrar.png");
-			if (imgUrl != null) {
-				ImageIcon iconOriginal = new ImageIcon(imgUrl);
-				Image imgEscalada = iconOriginal.getImage().getScaledInstance(anchoContenedor, altoContenedor,
-						Image.SCALE_SMOOTH);
-				lblImagen.setIcon(new ImageIcon(imgEscalada));
-			} else {
-				System.err.println("No se encontró el archivo de imagen en /imagenes/empleadoregistrar.png");
-				lblImagen.setText("Sin Imagen");
-				lblImagen.setBorder(new EtchedBorder());
-			}
-		} catch (Exception e) {
-			System.err.println("Error cargando/escalando imagen: " + e.getMessage());
-		}
-		contentPanel.add(lblImagen);
-		JLabel lblNewLabel = new JLabel("Codigo:");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblNewLabel.setBounds(161, 44, 59, 23);
-		contentPanel.add(lblNewLabel);
-		txtcodigo = new JTextField();
-		txtcodigo.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtcodigo.setText("TRA-" + AlticeSistema.numTecnico);
+		contentPanel.add(crearHeader(), BorderLayout.NORTH);
+		contentPanel.add(crearContenido(), BorderLayout.CENTER);
+		contentPanel.add(crearBotonera(), BorderLayout.SOUTH);
+	}
+
+	private JPanel crearHeader() {
+		JPanel header = new JPanel(new BorderLayout(15, 15));
+		header.setBackground(COLOR_PANEL);
+		header.setBorder(BorderFactory.createCompoundBorder(
+				new LineBorder(COLOR_BORDE, 1, true),
+				new EmptyBorder(18, 18, 18, 18)));
+
+		JLabel icono = new JLabel();
+		icono.setHorizontalAlignment(SwingConstants.CENTER);
+		icono.setPreferredSize(new java.awt.Dimension(70, 70));
+		icono.setIcon(cargarIcono("/imagenes/empleadoregistrar.png", 48, 48));
+		header.add(icono, BorderLayout.WEST);
+
+		JPanel textos = new JPanel(new BorderLayout(0, 4));
+		textos.setOpaque(false);
+
+		JLabel titulo = new JLabel("Registrar Empleado");
+		titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+		titulo.setForeground(COLOR_TEXTO);
+
+		JLabel subtitulo = new JLabel("Completa la información del empleado y selecciona su tipo dentro del sistema.");
+		subtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		subtitulo.setForeground(COLOR_SECUNDARIO);
+
+		textos.add(titulo, BorderLayout.NORTH);
+		textos.add(subtitulo, BorderLayout.CENTER);
+
+		header.add(textos, BorderLayout.CENTER);
+
+		return header;
+	}
+
+	private JPanel crearContenido() {
+		JPanel contenedor = new JPanel(new BorderLayout(18, 18));
+		contenedor.setOpaque(false);
+
+		JPanel panelDatos = new JPanel(new GridLayout(1, 2, 18, 0));
+		panelDatos.setOpaque(false);
+
+		JPanel panelIzquierdo = new JPanel(null);
+		panelIzquierdo.setBackground(COLOR_PANEL);
+		panelIzquierdo.setBorder(BorderFactory.createCompoundBorder(
+				new LineBorder(COLOR_BORDE, 1, true),
+				new EmptyBorder(10, 10, 10, 10)));
+
+		JPanel panelDerecho = new JPanel(null);
+		panelDerecho.setBackground(COLOR_PANEL);
+		panelDerecho.setBorder(BorderFactory.createCompoundBorder(
+				new LineBorder(COLOR_BORDE, 1, true),
+				new EmptyBorder(10, 10, 10, 10)));
+
+		JLabel lblDatosBasicos = new JLabel("Datos personales");
+		lblDatosBasicos.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		lblDatosBasicos.setForeground(COLOR_TEXTO);
+		lblDatosBasicos.setBounds(25, 20, 200, 25);
+		panelIzquierdo.add(lblDatosBasicos);
+
+		JLabel lblCodigo = new JLabel("Código");
+		lblCodigo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblCodigo.setBounds(25, 65, 120, 20);
+		panelIzquierdo.add(lblCodigo);
+
+		txtcodigo = crearTextField();
 		txtcodigo.setEditable(false);
-		txtcodigo.setColumns(10);
-		txtcodigo.setBounds(209, 47, 96, 18);
-		contentPanel.add(txtcodigo);
+		txtcodigo.setText("TRA-" + AlticeSistema.numTecnico);
+		txtcodigo.setBounds(25, 88, 150, 38);
+		panelIzquierdo.add(txtcodigo);
 
-		JLabel txtnombre = new JLabel("Nombre:");
-		txtnombre.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		txtnombre.setBounds(161, 80, 59, 12);
-		contentPanel.add(txtnombre);
+		JLabel lblNombre = new JLabel("Nombre");
+		lblNombre.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblNombre.setBounds(25, 145, 120, 20);
+		panelIzquierdo.add(lblNombre);
 
-		textField_1 = new JTextField();
-		textField_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		textField_1.setColumns(10);
-		textField_1.setBounds(161, 102, 205, 23);
-		contentPanel.add(textField_1);
+		txtNombre = crearTextField();
+		txtNombre.setBounds(25, 168, 300, 38);
+		panelIzquierdo.add(txtNombre);
 
-		textField_2 = new JTextField();
-		textField_2.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		textField_2.setColumns(10);
-		textField_2.setBounds(383, 102, 205, 23);
-		contentPanel.add(textField_2);
+		JLabel lblCedula = new JLabel("Cédula");
+		lblCedula.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblCedula.setBounds(25, 225, 120, 20);
+		panelIzquierdo.add(lblCedula);
 
-		JLabel txtcedula = new JLabel("Cedula:");
-		txtcedula.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		txtcedula.setBounds(383, 80, 44, 12);
-		contentPanel.add(txtcedula);
+		txtCedula = crearTextField();
+		txtCedula.setBounds(25, 248, 300, 38);
+		panelIzquierdo.add(txtCedula);
 
-		JLabel txttelefono = new JLabel("Telefono:");
-		txttelefono.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		txttelefono.setBounds(161, 130, 59, 12);
-		contentPanel.add(txttelefono);
+		JLabel lblTelefono = new JLabel("Teléfono");
+		lblTelefono.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblTelefono.setBounds(25, 305, 120, 20);
+		panelIzquierdo.add(lblTelefono);
 
-		textField_3 = new JTextField();
-		textField_3.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		textField_3.setColumns(10);
-		textField_3.setBounds(161, 152, 205, 23);
-		contentPanel.add(textField_3);
+		txtTelefono = crearTextField();
+		txtTelefono.setBounds(25, 328, 300, 38);
+		panelIzquierdo.add(txtTelefono);
 
-		JLabel txtdireccion = new JLabel("Direccion:");
-		txtdireccion.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		txtdireccion.setBounds(383, 133, 59, 12);
-		contentPanel.add(txtdireccion);
+		JLabel lblDireccion = new JLabel("Dirección");
+		lblDireccion.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblDireccion.setBounds(25, 385, 120, 20);
+		panelIzquierdo.add(lblDireccion);
 
-		textField_4 = new JTextField();
-		textField_4.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		textField_4.setColumns(10);
-		textField_4.setBounds(383, 152, 205, 23);
-		contentPanel.add(textField_4);
+		txtDireccion = crearTextField();
+		txtDireccion.setBounds(25, 408, 300, 38);
+		panelIzquierdo.add(txtDireccion);
 
-		txtRegistroDeEmpleados = new JTextField();
-		txtRegistroDeEmpleados.setBackground(new Color(192, 192, 192));
-		txtRegistroDeEmpleados.setHorizontalAlignment(SwingConstants.CENTER);
-		txtRegistroDeEmpleados.setEditable(false);
-		txtRegistroDeEmpleados.setText("Registro de Empleados");
-		txtRegistroDeEmpleados.setFont(new Font("Tahoma", Font.PLAIN, 19));
-		txtRegistroDeEmpleados.setColumns(10);
-		txtRegistroDeEmpleados.setBounds(0, 0, 619, 34);
-		contentPanel.add(txtRegistroDeEmpleados);
+		JLabel lblDatosLaborales = new JLabel("Datos laborales");
+		lblDatosLaborales.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		lblDatosLaborales.setForeground(COLOR_TEXTO);
+		lblDatosLaborales.setBounds(25, 20, 200, 25);
+		panelDerecho.add(lblDatosLaborales);
 
-		JPanel panel = new JPanel();
-		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel.setBounds(10, 246, 599, 34);
-		contentPanel.add(panel);
-		panel.setLayout(null);
+		JLabel lblSalario = new JLabel("Salario");
+		lblSalario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblSalario.setBounds(25, 65, 120, 20);
+		panelDerecho.add(lblSalario);
+
+		txtSalario = crearTextField();
+		txtSalario.setBounds(25, 88, 300, 38);
+		panelDerecho.add(txtSalario);
+
+		JLabel lblFecha = new JLabel("Fecha de ingreso");
+		lblFecha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblFecha.setBounds(25, 145, 140, 20);
+		panelDerecho.add(lblFecha);
+
+		txtFecha = crearTextField();
+		txtFecha.setEditable(false);
+		txtFecha.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+		txtFecha.setBounds(25, 168, 300, 38);
+		panelDerecho.add(txtFecha);
+
+		JLabel lblTipo = new JLabel("Tipo de empleado");
+		lblTipo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lblTipo.setBounds(25, 225, 140, 20);
+		panelDerecho.add(lblTipo);
 
 		btnTrabajo = new JRadioButton("Trabajador");
-		btnTrabajo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				btnAdministrativo.setSelected(false);
-				btnComercial.setSelected(false);
-				btnTrabajo.setSelected(true);
-
-				panelTrabajador.setVisible(true);
-				panelAdministrativo.setVisible(false);
-				panelComercial.setVisible(false);
-
-				txtcodigo.setText("TRA-" + AlticeSistema.numTecnico);
-			}
-		});
-		btnTrabajo.setSelected(true);
-		btnTrabajo.setBounds(24, 6, 102, 20);
-		panel.add(btnTrabajo);
+		btnTrabajo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		btnTrabajo.setBackground(COLOR_PANEL);
+		btnTrabajo.setBounds(25, 250, 110, 25);
 
 		btnAdministrativo = new JRadioButton("Administrativo");
-		btnAdministrativo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				btnAdministrativo.setSelected(true);
-				btnComercial.setSelected(false);
-				btnTrabajo.setSelected(false);
-
-				panelTrabajador.setVisible(false);
-				panelAdministrativo.setVisible(true);
-				panelComercial.setVisible(false);
-
-				txtcodigo.setText("ADM-" + AlticeSistema.numAdministrador);
-			}
-		});
-		btnAdministrativo.setBounds(220, 6, 116, 20);
-		panel.add(btnAdministrativo);
+		btnAdministrativo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		btnAdministrativo.setBackground(COLOR_PANEL);
+		btnAdministrativo.setBounds(140, 250, 130, 25);
 
 		btnComercial = new JRadioButton("Comercial");
-		btnComercial.addActionListener(new ActionListener() {
+		btnComercial.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		btnComercial.setBackground(COLOR_PANEL);
+		btnComercial.setBounds(275, 250, 100, 25);
+
+		grupoTipo = new ButtonGroup();
+		grupoTipo.add(btnTrabajo);
+		grupoTipo.add(btnAdministrativo);
+		grupoTipo.add(btnComercial);
+
+		panelDerecho.add(btnTrabajo);
+		panelDerecho.add(btnAdministrativo);
+		panelDerecho.add(btnComercial);
+
+		cardLayoutDetalle = new CardLayout();
+		panelDetalleTipo = new JPanel(cardLayoutDetalle);
+		panelDetalleTipo.setBackground(COLOR_PANEL);
+		panelDetalleTipo.setBounds(25, 300, 320, 120);
+
+		panelDetalleTipo.add(crearPanelTrabajador(), "TRABAJADOR");
+		panelDetalleTipo.add(crearPanelAdministrativo(), "ADMINISTRATIVO");
+		panelDetalleTipo.add(crearPanelComercial(), "COMERCIAL");
+
+		panelDerecho.add(panelDetalleTipo);
+
+		btnTrabajo.setSelected(true);
+		cardLayoutDetalle.show(panelDetalleTipo, "TRABAJADOR");
+
+		btnTrabajo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				btnAdministrativo.setSelected(false);
-				btnComercial.setSelected(true);
-				btnTrabajo.setSelected(false);
-
-				panelTrabajador.setVisible(false);
-				panelAdministrativo.setVisible(false);
-				panelComercial.setVisible(true);
-
-				txtcodigo.setText("COM-" + AlticeSistema.numComercial);
+				txtcodigo.setText("TRA-" + AlticeSistema.numTecnico);
+				cardLayoutDetalle.show(panelDetalleTipo, "TRABAJADOR");
 			}
 		});
-		btnComercial.setBounds(430, 6, 102, 20);
-		panel.add(btnComercial);
 
-		panelTrabajador = new JPanel();
-		panelTrabajador.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelTrabajador.setBounds(10, 296, 599, 66);
-		contentPanel.add(panelTrabajador);
-		panelTrabajador.setLayout(null);
+		btnAdministrativo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtcodigo.setText("ADM-" + AlticeSistema.numAdministrador);
+				cardLayoutDetalle.show(panelDetalleTipo, "ADMINISTRATIVO");
+			}
+		});
 
-		cmbArea = new JComboBox<String>();
-		cmbArea.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		cmbArea.setModel(new DefaultComboBoxModel<String>(new String[] { "<Seleccione>", "Cajero",
-				"Servicio al cliente", "Tecnico", "Ingeniero", "Call Center" }));
-		cmbArea.setBounds(124, 22, 159, 25);
-		panelTrabajador.add(cmbArea);
+		btnComercial.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtcodigo.setText("COM-" + AlticeSistema.numComercial);
+				cardLayoutDetalle.show(panelDetalleTipo, "COMERCIAL");
+			}
+		});
 
-		JLabel lblAreaTecnica = new JLabel("Area Tecnica");
-		lblAreaTecnica.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblAreaTecnica.setBounds(29, 27, 97, 12);
-		panelTrabajador.add(lblAreaTecnica);
+		panelDatos.add(panelIzquierdo);
+		panelDatos.add(panelDerecho);
 
-		textField_5 = new JTextField();
-		textField_5.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		textField_5.setColumns(10);
-		textField_5.setBounds(161, 207, 205, 23);
-		contentPanel.add(textField_5);
+		contenedor.add(panelDatos, BorderLayout.CENTER);
+		return contenedor;
+	}
 
-		JLabel txtsalario = new JLabel("Salario:");
-		txtsalario.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		txtsalario.setBounds(161, 185, 59, 12);
-		contentPanel.add(txtsalario);
+	private JPanel crearPanelTrabajador() {
+		JPanel panel = new JPanel(null);
+		panel.setBackground(COLOR_PANEL);
 
-		JLabel lblFechaIngreso = new JLabel("Fecha de Ingreso:");
-		lblFechaIngreso.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblFechaIngreso.setBounds(383, 188, 111, 12);
-		contentPanel.add(lblFechaIngreso);
+		JLabel lbl = new JLabel("Área técnica");
+		lbl.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lbl.setBounds(0, 5, 120, 20);
+		panel.add(lbl);
 
-		txtfecha = new JTextField();
-		txtfecha.setEditable(false);
-		txtfecha.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		txtfecha.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
-		txtfecha.setColumns(10);
-		txtfecha.setBounds(383, 207, 205, 23);
-		contentPanel.add(txtfecha);
+		cmbAreaTrabajador = new JComboBox<>();
+		cmbAreaTrabajador.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		cmbAreaTrabajador.setModel(new DefaultComboBoxModel<>(
+				new String[] { "<Seleccione>", "Cajero", "Servicio al cliente", "Tecnico", "Ingeniero", "Call Center" }));
+		cmbAreaTrabajador.setBounds(0, 30, 280, 38);
+		panel.add(cmbAreaTrabajador);
 
-		panelAdministrativo = new JPanel();
-		panelAdministrativo.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelAdministrativo.setBounds(10, 296, 599, 66);
-		contentPanel.add(panelAdministrativo);
-		panelAdministrativo.setLayout(null);
+		JLabel info = new JLabel("Seleccione el área asignada para este trabajador.");
+		info.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		info.setForeground(COLOR_SECUNDARIO);
+		info.setBounds(0, 78, 300, 20);
+		panel.add(info);
 
-		JLabel labelarea = new JLabel("Area Administrativa");
-		labelarea.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		labelarea.setBounds(29, 27, 119, 12);
-		panelAdministrativo.add(labelarea);
+		return panel;
+	}
 
-		cmbAdmin = new JComboBox<String>();
-		cmbAdmin.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		cmbAdmin.setModel(new DefaultComboBoxModel<String>(new String[] { "<Seleccione>", "Ventas",
-				"Servicio al cliente", "Tecnico", "Ingeniero", "Call Center" }));
-		cmbAdmin.setBounds(144, 22, 159, 25);
-		panelAdministrativo.add(cmbAdmin);
+	private JPanel crearPanelAdministrativo() {
+		JPanel panel = new JPanel(null);
+		panel.setBackground(COLOR_PANEL);
 
-		panelComercial = new JPanel();
-		panelComercial.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelComercial.setBounds(10, 296, 599, 66);
-		contentPanel.add(panelComercial);
-		panelComercial.setLayout(null);
+		JLabel lbl = new JLabel("Departamento");
+		lbl.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lbl.setBounds(0, 5, 120, 20);
+		panel.add(lbl);
 
-		JLabel lblProducto = new JLabel("Producto que vende");
-		lblProducto.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblProducto.setBounds(29, 27, 146, 19);
-		panelComercial.add(lblProducto);
+		cmbAreaAdmin = new JComboBox<>();
+		cmbAreaAdmin.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		cmbAreaAdmin.setModel(new DefaultComboBoxModel<>(
+				new String[] { "<Seleccione>", "Ventas", "Servicio al cliente", "Tecnico", "Ingeniero", "Call Center" }));
+		cmbAreaAdmin.setBounds(0, 30, 280, 38);
+		panel.add(cmbAreaAdmin);
 
-		cmbArea_1 = new JComboBox<String>();
-		cmbArea_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		cmbArea_1.setModel(new DefaultComboBoxModel<String>(
+		JLabel info = new JLabel("Seleccione el departamento administrativo.");
+		info.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		info.setForeground(COLOR_SECUNDARIO);
+		info.setBounds(0, 78, 300, 20);
+		panel.add(info);
+
+		return panel;
+	}
+
+	private JPanel crearPanelComercial() {
+		JPanel panel = new JPanel(null);
+		panel.setBackground(COLOR_PANEL);
+
+		JLabel lbl = new JLabel("Producto que vende");
+		lbl.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		lbl.setBounds(0, 5, 140, 20);
+		panel.add(lbl);
+
+		cmbProductoComercial = new JComboBox<>();
+		cmbProductoComercial.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		cmbProductoComercial.setModel(new DefaultComboBoxModel<>(
 				new String[] { "<Seleccione>", "Lineas telefonicas", "Servicio de internet" }));
-		cmbArea_1.setBounds(154, 22, 158, 24);
-		panelComercial.add(cmbArea_1);
+		cmbProductoComercial.setBounds(0, 30, 280, 38);
+		panel.add(cmbProductoComercial);
 
-		panelAdministrativo.setVisible(false);
-		panelComercial.setVisible(false);
+		JLabel info = new JLabel("Seleccione el producto asignado al comercial.");
+		info.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		info.setForeground(COLOR_SECUNDARIO);
+		info.setBounds(0, 78, 300, 20);
+		panel.add(info);
 
-		JPanel buttonPane = new JPanel();
-		buttonPane.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
-		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+		return panel;
+	}
 
-		JButton okButton = new JButton("Registrar");
-		okButton.addActionListener(new ActionListener() {
+	private JPanel crearBotonera() {
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+		buttonPane.setOpaque(false);
+
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setFocusPainted(false);
+		btnCancelar.setBorderPainted(false);
+		btnCancelar.setBackground(new Color(230, 235, 240));
+		btnCancelar.setForeground(COLOR_TEXTO);
+		btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		btnCancelar.setPreferredSize(new java.awt.Dimension(120, 40));
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		buttonPane.add(btnCancelar);
+
+		JButton btnRegistrar = new JButton("Registrar");
+		btnRegistrar.setFocusPainted(false);
+		btnRegistrar.setBorderPainted(false);
+		btnRegistrar.setBackground(COLOR_PRIMARIO);
+		btnRegistrar.setForeground(Color.WHITE);
+		btnRegistrar.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		btnRegistrar.setPreferredSize(new java.awt.Dimension(130, 40));
+		btnRegistrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (validarCampos()) {
 
 					Persona aux = null;
 
 					String codigo = txtcodigo.getText();
-					String nombre = textField_1.getText();
-					String cedula = textField_2.getText();
-					String telefono = textField_3.getText();
-					String direccion = textField_4.getText();
-					double salario = Double.parseDouble(textField_5.getText());
-					String fecha = txtfecha.getText();
+					String nombre = txtNombre.getText();
+					String cedula = txtCedula.getText();
+					String telefono = txtTelefono.getText();
+					String direccion = txtDireccion.getText();
+					double salario = Double.parseDouble(txtSalario.getText());
+					String fecha = txtFecha.getText();
 
 					if (btnTrabajo.isSelected()) {
-						String area = cmbArea.getSelectedItem().toString();
+						String area = cmbAreaTrabajador.getSelectedItem().toString();
 						aux = new Trabajador(codigo, nombre, cedula, telefono, direccion, salario, fecha, area);
 
 					} else if (btnAdministrativo.isSelected()) {
-						String departamento = cmbAdmin.getSelectedItem().toString();
+						String departamento = cmbAreaAdmin.getSelectedItem().toString();
 						aux = new Administrativo(codigo, nombre, cedula, telefono, direccion, salario, fecha,
 								departamento);
 
 					} else if (btnComercial.isSelected()) {
-						String producto = cmbArea_1.getSelectedItem().toString();
+						String producto = cmbProductoComercial.getSelectedItem().toString();
 						aux = new Comercial(codigo, nombre, cedula, telefono, direccion, salario, fecha, 0, producto);
 					}
 
@@ -344,66 +434,67 @@ public class RegEmpleados extends JDialog {
 				}
 			}
 		});
-		okButton.setActionCommand("OK");
-		buttonPane.add(okButton);
-		getRootPane().setDefaultButton(okButton);
+		buttonPane.add(btnRegistrar);
+		getRootPane().setDefaultButton(btnRegistrar);
 
-		JButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-		cancelButton.setActionCommand("Cancel");
-		buttonPane.add(cancelButton);
+		return buttonPane;
+	}
+
+	private JTextField crearTextField() {
+		JTextField field = new JTextField();
+		field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		field.setBorder(BorderFactory.createCompoundBorder(
+				new LineBorder(COLOR_BORDE, 1, true),
+				new EmptyBorder(8, 10, 8, 10)));
+		return field;
 	}
 
 	private boolean validarCampos() {
 
-		if (textField_1.getText().isEmpty() || textField_2.getText().isEmpty() || textField_3.getText().isEmpty()
-				|| textField_4.getText().isEmpty() || textField_5.getText().isEmpty() || txtfecha.getText().isEmpty()) {
+		if (txtNombre.getText().isEmpty() || txtCedula.getText().isEmpty() || txtTelefono.getText().isEmpty()
+				|| txtDireccion.getText().isEmpty() || txtSalario.getText().isEmpty() || txtFecha.getText().isEmpty()) {
 
 			JOptionPane.showMessageDialog(null, "Por favor, completa todos los campos.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
-		if (!textField_1.getText().matches("[a-zA-Z ]+")) {
+		if (!txtNombre.getText().matches("[a-zA-Z ]+")) {
 			JOptionPane.showMessageDialog(null, "El nombre solo debe contener letras.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
-		if (!textField_2.getText().matches("\\d+")) {
+		if (!txtCedula.getText().matches("\\d+")) {
 			JOptionPane.showMessageDialog(null, "La cédula solo debe contener números.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
-		if (!textField_3.getText().matches("\\d+")) {
+		if (!txtTelefono.getText().matches("\\d+")) {
 			JOptionPane.showMessageDialog(null, "El teléfono solo debe contener números.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
-		if (!textField_5.getText().matches("\\d+(\\.\\d+)?")) {
+		if (!txtSalario.getText().matches("\\d+(\\.\\d+)?")) {
 			JOptionPane.showMessageDialog(null, "El salario debe ser un número válido.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
-		if (btnTrabajo.isSelected() && cmbArea.getSelectedIndex() == 0) {
+		if (btnTrabajo.isSelected() && cmbAreaTrabajador.getSelectedIndex() == 0) {
 			JOptionPane.showMessageDialog(null, "Seleccione un área técnica.", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
-		if (btnAdministrativo.isSelected() && cmbAdmin.getSelectedIndex() == 0) {
+		if (btnAdministrativo.isSelected() && cmbAreaAdmin.getSelectedIndex() == 0) {
 			JOptionPane.showMessageDialog(null, "Seleccione un área administrativa.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
-		if (btnComercial.isSelected() && cmbArea_1.getSelectedIndex() == 0) {
+		if (btnComercial.isSelected() && cmbProductoComercial.getSelectedIndex() == 0) {
 			JOptionPane.showMessageDialog(null, "Seleccione un producto.", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
@@ -412,25 +503,33 @@ public class RegEmpleados extends JDialog {
 	}
 
 	private void clean() {
-		textField_1.setText("");
-		textField_2.setText("");
-		textField_3.setText("");
-		textField_4.setText("");
-		textField_5.setText("");
-		txtfecha.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+		txtNombre.setText("");
+		txtCedula.setText("");
+		txtTelefono.setText("");
+		txtDireccion.setText("");
+		txtSalario.setText("");
+		txtFecha.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 
-		cmbArea.setSelectedIndex(0);
-		cmbAdmin.setSelectedIndex(0);
-		cmbArea_1.setSelectedIndex(0);
+		cmbAreaTrabajador.setSelectedIndex(0);
+		cmbAreaAdmin.setSelectedIndex(0);
+		cmbProductoComercial.setSelectedIndex(0);
 
 		btnTrabajo.setSelected(true);
-		btnAdministrativo.setSelected(false);
-		btnComercial.setSelected(false);
-
-		panelTrabajador.setVisible(true);
-		panelAdministrativo.setVisible(false);
-		panelComercial.setVisible(false);
+		cardLayoutDetalle.show(panelDetalleTipo, "TRABAJADOR");
 
 		txtcodigo.setText("TRA-" + AlticeSistema.numTecnico);
+	}
+
+	private ImageIcon cargarIcono(String path, int ancho, int alto) {
+		try {
+			java.net.URL imgUrl = getClass().getResource(path);
+			if (imgUrl != null) {
+				ImageIcon iconOriginal = new ImageIcon(imgUrl);
+				Image imgEscalada = iconOriginal.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+				return new ImageIcon(imgEscalada);
+			}
+		} catch (Exception e) {
+		}
+		return null;
 	}
 }
