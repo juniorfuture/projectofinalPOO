@@ -187,8 +187,8 @@ public class Graficas extends JDialog {
 
 		BarRenderer renderer = (BarRenderer) plot.getRenderer();
 		renderer.setSeriesPaint(0, new Color(0, 123, 255));
-		renderer.setDefaultItemLabelFont(new Font("Segoe UI", Font.BOLD, 11));
-		renderer.setDefaultItemLabelsVisible(true);
+		renderer.setBaseItemLabelFont(new Font("Segoe UI", Font.BOLD, 11));
+		renderer.setBaseItemLabelsVisible(true);
 		renderer.setShadowVisible(false);
 		renderer.setMaximumBarWidth(0.12);
 

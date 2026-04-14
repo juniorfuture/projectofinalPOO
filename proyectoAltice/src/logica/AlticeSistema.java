@@ -263,4 +263,27 @@ public class AlticeSistema implements Serializable {
 	public Reporte generarReporteGeneral() {
 		return new Reporte("REP-1", "General", "N/A", "N/A", facturas, contratos, personas);
 	}
+	public String[] getNombresComercialesDisponibles() {
+		java.util.ArrayList<String> nombresComerciales = new java.util.ArrayList<>();
+		nombresComerciales.add("<Seleccione Comercial>");
+
+		for (Persona p : personas) { 
+			if (p instanceof Comercial) {
+				nombresComerciales.add(p.getNombre());
+			}
+		}
+
+		return nombresComerciales.toArray(new String[0]);
+	}
+
+	public Comercial buscarComercialPorNombre(String nombreBuscado) {
+		for (Persona p : personas) {
+			if (p instanceof Comercial) {
+				if (p.getNombre().equalsIgnoreCase(nombreBuscado)) {
+					return (Comercial) p;
+				}
+			}
+		}
+		return null;
+	}
 }

@@ -267,6 +267,34 @@ public class Principal extends JFrame {
 		});
 		mntmNewMenuItem_1.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 		mnReportes.add(mntmNewMenuItem_1);
+		
+		JMenu Chat = new JMenu("Chat");
+		Chat.setForeground(new Color(255, 255, 255));
+		Chat.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		menuBar.add(Chat);
+		
+		JMenuItem EncenderChat = new JMenuItem("Encender Servidor");
+		EncenderChat.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		EncenderChat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				LanzadorSistema sistema=new LanzadorSistema();
+				sistema.setVisible(true);
+			}
+		});
+		Chat.add(EncenderChat);
+		
+		JMenuItem Soporte = new JMenuItem("Soporte");
+		Soporte.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		Soporte.setForeground(new Color(0, 0, 0));
+		Soporte.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ChatSoporte chat=new ChatSoporte();
+				chat.setVisible(true);
+				
+				
+			}
+		});
+		Chat.add(Soporte);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));

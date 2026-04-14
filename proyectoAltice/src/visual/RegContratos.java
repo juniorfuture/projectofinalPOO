@@ -27,6 +27,7 @@ import logica.Persona;
 import logica.Plan;
 import logica.Contrato;
 import logica.Factura;
+import logica.Comercial; 
 
 public class RegContratos extends JDialog {
 
@@ -38,6 +39,7 @@ public class RegContratos extends JDialog {
 	private JTextField txtTelefonoCliente;
 	private JTextField txtIdClienteBusqueda;
 	private JComboBox<String> cmbPlanes;
+	private JComboBox<String> cmbComercial; 
 	private JLabel lblMontoTotal;
 	
 	private Cliente clienteSeleccionado = null;
@@ -67,6 +69,7 @@ public class RegContratos extends JDialog {
 		txtIdContrato.setEditable(false);
 		txtIdContrato.setBounds(400, 13, 100, 20);
 		panelHeader.add(txtIdContrato);
+		
 		JPanel panelCliente = new JPanel();
 		panelCliente.setBorder(new TitledBorder(new EtchedBorder(), "1. Identificar Cliente"));
 		panelCliente.setBounds(15, 60, 320, 350);
@@ -80,28 +83,29 @@ public class RegContratos extends JDialog {
 
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        ListaCliente lista = new ListaCliente();
-		        lista.setVisible(true);
-		        String nombreSeleccionado = lista.getNombreSeleccionado();
+			public void actionPerformed(ActionEvent e) {
+				ListaCliente lista = new ListaCliente();
+				lista.setVisible(true);
+				String nombreSeleccionado = lista.getNombreSeleccionado();
 
-		        if (nombreSeleccionado != null && !nombreSeleccionado.isEmpty()) {
-		            Persona aux = AlticeSistema.getInstance().buscarClientePorNombre(nombreSeleccionado);
+				if (nombreSeleccionado != null && !nombreSeleccionado.isEmpty()) {
+					Persona aux = AlticeSistema.getInstance().buscarClientePorNombre(nombreSeleccionado);
 
-		            if (aux != null && aux instanceof Cliente) {
-		                clienteSeleccionado = (Cliente) aux; 
-		                
-		                txtIdClienteBusqueda.setText(clienteSeleccionado.getId());
-		                txtNombreCliente.setText(clienteSeleccionado.getNombre());
-		                txtCedulaCliente.setText(clienteSeleccionado.getCedula());
-		                txtTelefonoCliente.setText(clienteSeleccionado.getTelefono());
-		     
-		                cmbPlanes.setEnabled(true);
-		            } else {
-		                JOptionPane.showMessageDialog(null, "La persona seleccionada no es un Cliente registrado.");
-		            }
-		        }
-		    }
+					if (aux != null && aux instanceof Cliente) {
+						clienteSeleccionado = (Cliente) aux; 
+						
+						txtIdClienteBusqueda.setText(clienteSeleccionado.getId());
+						txtNombreCliente.setText(clienteSeleccionado.getNombre());
+						txtCedulaCliente.setText(clienteSeleccionado.getCedula());
+						txtTelefonoCliente.setText(clienteSeleccionado.getTelefono());
+			 
+						cmbPlanes.setEnabled(true);
+						cmbComercial.setEnabled(true); 
+					} else {
+						JOptionPane.showMessageDialog(null, "La persona seleccionada no es un Cliente registrado.");
+					}
+				}
+			}
 		});
 		btnBuscar.setBounds(155, 44, 90, 26);
 		panelCliente.add(btnBuscar);
@@ -119,18 +123,29 @@ public class RegContratos extends JDialog {
 		txtCedulaCliente.setEditable(false);
 		txtCedulaCliente.setBounds(15, 170, 280, 25);
 		panelCliente.add(txtCedulaCliente);
-		panelCliente.add(new JLabel("Cédula:")).setBounds(15, 150, 80, 14);
+		
+		JLabel lblCed = new JLabel("Cédula:");
+		lblCed.setBounds(15, 150, 80, 14);
+		panelCliente.add(lblCed);
 		
 		txtTelefonoCliente = new JTextField();
 		txtTelefonoCliente.setEditable(false);
 		txtTelefonoCliente.setBounds(15, 230, 280, 25);
 		panelCliente.add(txtTelefonoCliente);
-		panelCliente.add(new JLabel("Teléfono:")).setBounds(15, 210, 80, 14);
+		
+		JLabel lblTel = new JLabel("Teléfono:");
+		lblTel.setBounds(15, 210, 80, 14);
+		panelCliente.add(lblTel);
+		
 		JPanel panelPlan = new JPanel();
-		panelPlan.setBorder(new TitledBorder(new EtchedBorder(), "2. Seleccionar Plan"));
+		panelPlan.setBorder(new TitledBorder(new EtchedBorder(), "2. Detalles de Venta"));
 		panelPlan.setBounds(350, 60, 320, 350);
 		contentPanel.add(panelPlan);
 		panelPlan.setLayout(null);
+
+		JLabel lblPlan = new JLabel("Seleccione el Plan:");
+		lblPlan.setBounds(15, 25, 150, 14);
+		panelPlan.add(lblPlan);
 
 		cmbPlanes = new JComboBox<String>();
 		cmbPlanes.setEnabled(false);
@@ -147,6 +162,17 @@ public class RegContratos extends JDialog {
 			}
 		});
 		panelPlan.add(cmbPlanes);
+
+		JLabel lblComercial = new JLabel("Comercial (Vendedor):");
+		lblComercial.setBounds(15, 90, 150, 14);
+		panelPlan.add(lblComercial);
+
+		cmbComercial = new JComboBox<String>();
+		cmbComercial.setEnabled(false);
+		cmbComercial.setModel(new DefaultComboBoxModel<String>(AlticeSistema.getInstance().getNombresComercialesDisponibles()));
+		cmbComercial.setBounds(15, 110, 280, 25);
+		panelPlan.add(cmbComercial);
+
 		JPanel panelResumen = new JPanel();
 		panelResumen.setBackground(new Color(240, 248, 255));
 		panelResumen.setBounds(0, 430, 684, 45);
@@ -166,10 +192,14 @@ public class RegContratos extends JDialog {
 		JButton btnRegistrar = new JButton("Registrar Contrato");
 		btnRegistrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (clienteSeleccionado != null && cmbPlanes.getSelectedIndex() > 0) {
+				if (clienteSeleccionado != null && cmbPlanes.getSelectedIndex() > 0 && cmbComercial.getSelectedIndex() > 0) {
+					
 					Plan plan = AlticeSistema.getInstance().buscarPlanPorNombre(cmbPlanes.getSelectedItem().toString());
+					Comercial vendedor = AlticeSistema.getInstance().buscarComercialPorNombre(cmbComercial.getSelectedItem().toString());
+					
 					String fecha = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
-					Contrato c = new Contrato(txtIdContrato.getText(), fecha, "Activo", clienteSeleccionado, plan);
+					
+					Contrato c = new Contrato(txtIdContrato.getText(), fecha, "Activo", clienteSeleccionado, plan, vendedor);
 					AlticeSistema.getInstance().registrarContrato(c);
 
 					String idFactura = "FAC-" + AlticeSistema.numFactura;
@@ -179,7 +209,7 @@ public class RegContratos extends JDialog {
 					JOptionPane.showMessageDialog(null, "Contrato y Factura (" + idFactura + ") generados con éxito.");
 					dispose();
 				} else {
-					JOptionPane.showMessageDialog(null, "Por favor, identifique al cliente y seleccione un plan.");
+					JOptionPane.showMessageDialog(null, "Por favor, identifique al cliente, seleccione un plan y asigne un comercial.", "Campos incompletos", JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		});

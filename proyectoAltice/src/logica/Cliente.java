@@ -7,12 +7,14 @@ public class Cliente extends Persona implements Serializable{
 	private String tipoCliente;
 	private String RNC;
 	private String estado;
+	private String genero; 
 
-	public Cliente(String id, String nombre, String cedula, String telefono, String direccion, String tipoCliente, String estado, String rnc) {
+	public Cliente(String id, String nombre, String cedula, String telefono, String direccion, String tipoCliente, String estado, String rnc, String genero) {
 		super(id, nombre, cedula, telefono, direccion);
 		this.tipoCliente = tipoCliente;
 		this.estado = estado;
-		this.RNC= rnc;
+		this.RNC = rnc;
+		this.genero = genero; 
 	}
 
 	public String getTipoCliente() {
@@ -39,4 +41,12 @@ public class Cliente extends Persona implements Serializable{
 		RNC = rNC;
 	}
 
+
+	public String getGenero() {
+		return genero;
+	}
+
+	public void setGenero(String genero) {
+		this.genero = genero;
+	}
 }
